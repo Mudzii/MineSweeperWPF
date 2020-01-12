@@ -11,6 +11,7 @@ namespace Minesweeper {
         public bool isMine = false;
         public bool revealed     = false;
         public bool isDismantled = false;
+        public int surroundingBombs = 0; 
        
         public string txt = "";
         SolidColorBrush clr = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
@@ -18,8 +19,6 @@ namespace Minesweeper {
         public int r = -1;
         public int c = -1; 
 
-
-        
 
         public string Txt {
             get { return txt; }
