@@ -25,21 +25,15 @@ namespace Minesweeper {
 
     public partial class MainWindow : Window {
 
-        //public enum GameState {
-        //    DEFAULT,
-        //    NEW_GAME,
-        //    GAME_WIN,
-        //    GAME_OVER
-        //};
 
-        //GameState gameState = GameState.DEFAULT;
-
+        // old Variables =========== 
         private List<GameTile> tiles;
         private Game gameLogic;
         private List<Button> tileButtons; 
 
         private DispatcherTimer timer;
         private int gTimer;
+
         private bool minesCreated;
         private bool gameEnded = false; 
 
@@ -52,6 +46,7 @@ namespace Minesweeper {
             startButton.Content = "Start";
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
+
             // initialize 
             initTimer();
             gameLogic = new Game();
@@ -59,8 +54,8 @@ namespace Minesweeper {
             tileButtons = new List<Button>(); 
             this.DataContext = gameLogic;
             initTiles();
-
-            
+ 
+           
         }
 
 
@@ -75,17 +70,13 @@ namespace Minesweeper {
         private void GameTick(object sender, EventArgs e) {
 
             gTimer++;
-            timerTextBox.Text = gTimer.ToString();
-
-            // change to ONLY check when a click is made
-            MineCount(); 
+            timerTextBox.Text = gTimer.ToString();     
         }
 
         private void initTimer() {
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += GameTick;
-            //timer.Start(); 
+            timer.Tick += GameTick; 
         }
 
         // tiles =======
@@ -115,6 +106,8 @@ namespace Minesweeper {
                     tb.Width = tb.Height; 
                     tb.IsHitTestVisible = true;
                     tb.FontSize = 16;
+
+
                     tb.Click += ClickedTile;
                     //tb.MouseRightButtonDown += RightClick;
                     tb.MouseDown += MouseButtonClick; 
@@ -208,8 +201,11 @@ namespace Minesweeper {
             Tiles = null;
             tileButtons = null;
             tileButtons = new List<Button>();
+
             gameLogic.NewGame();
+
             timerTextBox.Text = "0";
+
             minesCreated = false;
             gameEnded = false; 
 
@@ -220,6 +216,7 @@ namespace Minesweeper {
             
         private void GameStatus() {
 
+           
             // if all tiles but the ones with mines have been revealed, game is won
             if (!tiles.Any(x => x.isMine == false && x.revealed == false)) {
                     
@@ -229,7 +226,7 @@ namespace Minesweeper {
         }
 
         private void GameEnd() {
-
+      
             timer.Stop();
 
             foreach(GameTile t in tiles) {
@@ -246,7 +243,7 @@ namespace Minesweeper {
             if (!gameEnded) {
 
                 mineTextBox.Text = "0";
-                MessageBox.Show("You Won!"); 
+                MessageBox.Show("Congratulations, You Won! Your time was " + gTimer + "seconds"); 
             }
 
             else {
@@ -458,8 +455,9 @@ namespace Minesweeper {
         private void ClickedTile(object sender, RoutedEventArgs e) {
 
             // start timer as soon as left button is clicked
-            if (gTimer == 0)
+            if (gTimer == 0) {       
                 timer.Start();
+            }
 
             Button b = sender as Button;
             int x = Int32.Parse((sender as Button).Tag.ToString());

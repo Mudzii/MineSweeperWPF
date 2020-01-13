@@ -7,17 +7,21 @@ namespace Minesweeper {
    
     public class GameTile {
 
+        // remove later
         public int index   = -1;
+        SolidColorBrush clr = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
+
+
+
         public bool isMine = false;
+        public int surroundingBombs = 0; 
+
         public bool revealed     = false;
         public bool isDismantled = false;
-        public int surroundingBombs = 0; 
-       
-        public string txt = "";
-        SolidColorBrush clr = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
 
         public int r = -1;
         public int c = -1; 
+        public string txt = "";
 
 
         public string Txt {
