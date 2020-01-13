@@ -238,7 +238,7 @@ namespace Minesweeper {
 
                 if (t.isMine && !gameEnded) {
                     tileButtons[t.index].Content = "F";
-                    tileButtons[t.index].Foreground = Brushes.Gold;
+                    tileButtons[t.index].Foreground = Brushes.DarkRed;
                 }
                
             }
@@ -423,7 +423,7 @@ namespace Minesweeper {
 
             if (b.Content == "") {
                 b.Content = "F";
-                b.Foreground = Brushes.Gold; 
+                b.Foreground = Brushes.DarkRed; 
                 tiles[tileIndex].isDismantled = true;
                 gameLogic.dismantledTiles++; 
             }
