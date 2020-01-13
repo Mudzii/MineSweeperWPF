@@ -10,12 +10,12 @@ namespace Minesweeper {
 
 
         // Variables ===============
-        public int mines = 10;
+        public int mines = 1; //10;
         public int minesLeft;
-        public int dismantledTiles = 0; 
+        public int dismantledTiles = 0;
 
-        public int rows = 9;
-        public int columns = 9;
+        public int rows = 4;//9;
+        public int columns = 4; //9;
 
         public bool gameEnded = false; 
 

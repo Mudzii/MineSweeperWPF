@@ -55,6 +55,7 @@ namespace Minesweeper {
             // initialize 
             initTimer();
             gameLogic = new Game();
+            gameLogic.minesLeft = gameLogic.mines; 
             tileButtons = new List<Button>(); 
             this.DataContext = gameLogic;
             initTiles();
@@ -65,7 +66,7 @@ namespace Minesweeper {
 
         private void MineCount() {
 
-            int totalMineCnt = gameLogic.mines - gameLogic.dismantledTiles;
+            int totalMineCnt = gameLogic.minesLeft - gameLogic.dismantledTiles;
             mineTextBox.Text = totalMineCnt.ToString(); 
         }
 
@@ -115,6 +116,7 @@ namespace Minesweeper {
                     tb.IsHitTestVisible = true;
                     tb.FontSize = 16;
                     tb.Click += ClickedTile;
+                    tb.MouseRightButtonDown += RightClick; 
 
                     Binding bindingTxt = new Binding();
                     bindingTxt.Source = newTile.Txt;
@@ -156,12 +158,14 @@ namespace Minesweeper {
             }
         }
 
-
         private void UncoverMines() {
 
-           timer.Stop();
+           //timer.Stop();
            int len = tiles.Count();
            var children = ICMineField.ItemsSource;
+
+            gameLogic.minesLeft = 0;
+            mineTextBox.Text = "0";
 
             foreach (var child in children) {
 
@@ -188,7 +192,8 @@ namespace Minesweeper {
 
             }
 
-
+            gameEnded = true;
+            GameEnd(); 
             //ICMineField.ItemsSource = Tiles; 
         }
 
@@ -205,14 +210,38 @@ namespace Minesweeper {
             gameLogic.NewGame();
             timerTextBox.Text = "0";
             minesCreated = false;
-            
+            gameEnded = false; 
 
             initTiles(); 
             gTimer = 0;
-            timer.Start();
+            
+        }
+            
+        private void GameStatus() {
+
+            // if all tiles but the ones with mines have been revealed, game is won
+            if (!tiles.Any(x => x.isMine == false && x.revealed == false)) {
+                GameEnd(); 
+            }
+
+
+
+
         }
 
-        private void MarkTile() {
+        private void GameEnd() {
+
+            timer.Stop();
+
+            if (!gameEnded) {
+
+                MessageBox.Show("You Won!"); 
+            }
+
+            else {
+                MessageBox.Show("You lost!");
+
+            }
 
         }
 
@@ -275,49 +304,13 @@ namespace Minesweeper {
 
                     else
                         tileButtons[tile.index].Foreground = Brushes.Red;
-                    /* 
-                    // get surrounding tiles
-                    GameTile left  = tiles.Find(obj => obj.r == tileRow && obj.c == (tileCol - 1));
-                    GameTile right = tiles.Find(obj => obj.r == tileRow && obj.c == (tileCol + 1));
-
-                    GameTile top      = tiles.Find(obj => obj.r == (tileRow - 1) && obj.c == tileCol);
-                    GameTile topLeft  = tiles.Find(obj => obj.r == (tileRow - 1) && obj.c == (tileCol - 1));
-                    GameTile topRight = tiles.Find(obj => obj.r == (tileRow - 1) && obj.c == (tileCol + 1));
-
-                    GameTile bottom      = tiles.Find(obj => obj.r == (tileRow + 1) && obj.c == tileCol);
-                    GameTile bottomLeft  = tiles.Find(obj => obj.r == (tileRow + 1) && obj.c == (tileCol - 1));
-                    GameTile bottomRight = tiles.Find(obj => obj.r == (tileRow + 1) && obj.c == (tileCol + 1));
-
-                    // check if surrounding tiles exist and are mines
-                    if (left  != null && left.isMine   == true) { mineTile++; }
-                    if (right != null  && right.isMine == true) { mineTile++; }
-                    if (top   != null && top.isMine    == true) { mineTile++; }
-                    if (topLeft  != null && topLeft.isMine  == true) { mineTile++; }
-                    if (topRight != null && topRight.isMine == true) { mineTile++; }
-                    if (bottom   != null && bottom.isMine   == true) { mineTile++; }
-                    if (bottomLeft  != null && bottomLeft.isMine  == true) { mineTile++; }
-                    if (bottomRight != null && bottomRight.isMine == true) { mineTile++; }
-                     */
-
-
-
-                    //if (mineTile != 0) {
-
-                    //    tileButtons[tile.index].Content = tile.surroundingBombs.ToString();
-                    //}
-
-                    //else {
-                    //    tileButtons[tile.index].Background = Brushes.DarkGray;
-                    //}
-
+                
                 }
 
 
             }
         }
        
-
-
         private void RevealNeightbours(GameTile t) {
 
             int tileRow = t.r;
@@ -327,7 +320,7 @@ namespace Minesweeper {
           
             foreach (GameTile gt in nTiles) {
 
-                if(gt.revealed == false) {
+                if(gt.revealed == false && gt.isDismantled == false) {
                     gt.revealed = true;
 
                     if (gt.isMine == true && gt.isDismantled == false){
@@ -348,8 +341,10 @@ namespace Minesweeper {
                             RevealNeightbours(gt); 
                         }
 
-                        else
+                        else {
+                            tileButtons[gt.index].Background = Brushes.DarkGray;
                             tileButtons[gt.index].Content = gt.surroundingBombs.ToString();
+                        }
                     }
 
 
@@ -358,53 +353,103 @@ namespace Minesweeper {
             }
 
 
+        }
 
+        private void RightClick(object sender, RoutedEventArgs e) {
+
+            Button b = sender as Button;
+            int x = Int32.Parse((sender as Button).Tag.ToString());
+
+            int tileIndex = tiles[x].index; 
+
+            if (b.Content == "") {
+                b.Content = "F";
+                b.Foreground = Brushes.Gold; 
+                tiles[tileIndex].isDismantled = true;
+                gameLogic.dismantledTiles++; 
+            }
+
+            else if (b.Content == "F") {
+                b.Content = "?";
+                b.Foreground = Brushes.DarkMagenta;
+                tiles[tileIndex].isDismantled = false;
+                gameLogic.dismantledTiles--;
+            }
+
+            else if (b.Content == "?") {
+                b.Content = "";
+                tiles[tileIndex].isDismantled = false;
+
+                if (tiles[tileIndex].surroundingBombs == 1)
+                    tileButtons[tileIndex].Foreground = Brushes.Blue;
+
+
+                else if (tiles[tileIndex].surroundingBombs == 2)
+                    tileButtons[tileIndex].Foreground = Brushes.Green;
+
+                else
+                    tileButtons[tileIndex].Foreground = Brushes.Red;
+
+            }
+
+            MineCount();
+            GameStatus();
         }
 
         private void ClickedTile(object sender, RoutedEventArgs e) {
 
+            // start timer as soon as left button is clicked
             if (gTimer == 0)
                 timer.Start();
 
-
             Button b = sender as Button;
-
-            var prnt = b.Parent; 
             int x = Int32.Parse((sender as Button).Tag.ToString());
             
             GameTile t = tiles[x];
-            t.revealed = true;
-           
 
-            if (!minesCreated) {
+            if(tiles[x].isDismantled == false) {
+              
+                t.revealed = true;
 
-                CreateMines(tiles);
-                GetSurroundingMines(tiles); 
-                minesCreated = true; 
-            }
+                if (!minesCreated) {
 
-            if(t.isMine == true) {
-                b.Content = "BOM"; 
-                b.Foreground = Brushes.White;
-                b.Background = Brushes.Red;
+                    CreateMines(tiles);
+                    GetSurroundingMines(tiles); 
+                    minesCreated = true; 
+                }
 
-                gameEnded = true; 
-                UncoverMines(); 
-            }
+                if (b.Content == "?") {
+                    b.Content = "";     
+                }
 
+                if (t.isMine == true) {
+                    b.Content = "BOM"; 
+                    b.Foreground = Brushes.White;
+                    b.Background = Brushes.Red;
 
-
-            else {
-
-                if(t.surroundingBombs != 0)
-                    b.Content = t.surroundingBombs.ToString();
+                    gameEnded = true; 
+                    UncoverMines(); 
+                }
 
                 else {
-                    b.Background = Brushes.DarkGray;
-                    RevealNeightbours(t); 
+
+                    if(t.surroundingBombs != 0) {
+
+                        b.Content = t.surroundingBombs.ToString();
+                        b.Background = Brushes.DarkGray;
+                    }
+
+                    else {
+                        b.Background = Brushes.DarkGray;
+                        RevealNeightbours(t); 
+                    }
+
+                    MineCount();
                 }
+
             }
 
+            GameStatus(); 
 
             // = MessageBox.Show((sender as Button).Tag.ToString()); 
 
@@ -417,8 +462,6 @@ namespace Minesweeper {
 
         }
 
-        
-
         public List<GameTile> Tiles {
             get { return tiles; }
 
@@ -427,8 +470,6 @@ namespace Minesweeper {
                 //ICMineField.ItemsSource = tiles;
             }
         }
-
-
 
 
 
