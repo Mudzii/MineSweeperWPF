@@ -116,7 +116,8 @@ namespace Minesweeper {
                     tb.IsHitTestVisible = true;
                     tb.FontSize = 16;
                     tb.Click += ClickedTile;
-                    tb.MouseRightButtonDown += RightClick; 
+                    //tb.MouseRightButtonDown += RightClick;
+                    tb.MouseDown += MouseButtonClick; 
 
                     Binding bindingTxt = new Binding();
                     bindingTxt.Source = newTile.Txt;
@@ -351,7 +352,8 @@ namespace Minesweeper {
 
                             tileButtons[gt.index].Background = Brushes.DarkGray;
                             RevealNeightbours(gt);
-                            tileButtons[gt.index].IsHitTestVisible = false; 
+                            tileButtons[gt.index].IsHitTestVisible = false;
+                            tileButtons[gt.index].Content = ""; 
                         }
 
                         else {
@@ -365,6 +367,50 @@ namespace Minesweeper {
 
             }
 
+            GameStatus(); 
+        }
+
+        private void MouseButtonClick(object sender, MouseButtonEventArgs e) {
+
+           
+
+            if (e.ChangedButton == MouseButton.Right) {
+                RightClick(sender, e); 
+            }
+
+            else if(e.ChangedButton == MouseButton.Middle) {
+                MiddleClick(sender, e);
+            }
+            
+
+        }
+
+        private void MiddleClick(object sender, RoutedEventArgs e) {
+
+            //if you middle-click a number, and it is surrounded by exactly that many flags 
+            //(as indicated by the number), all covered tiles become uncovered
+
+            Button b = sender as Button;
+            int x = Int32.Parse((sender as Button).Tag.ToString());
+
+            GameTile t = tiles[x];
+
+            if(t.surroundingBombs > 0 && t.revealed == true) {
+
+                int nDisarmed = 0; 
+                var nTiles = SurroundingTiles(t.r, t.c);
+
+                // get how many flags are arround the tile
+                nDisarmed = nTiles.Count(x => x.isDismantled == true); 
+
+                if(nDisarmed == t.surroundingBombs) {
+
+                    RevealNeightbours(t); 
+                   
+                }
+
+
+            }
 
         }
 
