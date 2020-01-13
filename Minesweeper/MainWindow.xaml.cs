@@ -221,11 +221,9 @@ namespace Minesweeper {
 
             // if all tiles but the ones with mines have been revealed, game is won
             if (!tiles.Any(x => x.isMine == false && x.revealed == false)) {
+                    
                 GameEnd(); 
             }
-
-
-
 
         }
 
@@ -233,8 +231,20 @@ namespace Minesweeper {
 
             timer.Stop();
 
+            foreach(GameTile t in tiles) {
+
+                tileButtons[t.index].IsHitTestVisible = false;
+
+                if (t.isMine && !gameEnded) {
+                    tileButtons[t.index].Content = "F";
+                    tileButtons[t.index].Foreground = Brushes.Gold;
+                }
+               
+            }
+
             if (!gameEnded) {
 
+                mineTextBox.Text = "0";
                 MessageBox.Show("You Won!"); 
             }
 
@@ -335,10 +345,13 @@ namespace Minesweeper {
 
                     if (!gt.isMine) {
 
+
+
                         if (gt.surroundingBombs == 0) {
 
                             tileButtons[gt.index].Background = Brushes.DarkGray;
-                            RevealNeightbours(gt); 
+                            RevealNeightbours(gt);
+                            tileButtons[gt.index].IsHitTestVisible = false; 
                         }
 
                         else {
