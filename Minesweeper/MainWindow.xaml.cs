@@ -330,25 +330,28 @@ namespace Minesweeper {
                 if(gt.revealed == false) {
                     gt.revealed = true;
 
+                    if (gt.isMine == true && gt.isDismantled == false){
+                        
+                        tileButtons[gt.index].Background = Brushes.Red;
+                        tileButtons[gt.index].Foreground = Brushes.White;
+                        tileButtons[gt.index].Content = "BOM";
+                        UncoverMines();
+                        return; 
+
+                    }
+
                     if (!gt.isMine) {
 
                         if (gt.surroundingBombs == 0) {
 
                             tileButtons[gt.index].Background = Brushes.DarkGray;
+                            RevealNeightbours(gt); 
                         }
 
                         else
                             tileButtons[gt.index].Content = gt.surroundingBombs.ToString();
                     }
 
-                    else if (gt.isMine == true && gt.isDismantled == false){
-                        
-                        tileButtons[gt.index].Background = Brushes.Red;
-                        tileButtons[gt.index].Foreground = Brushes.White;
-                        tileButtons[gt.index].Content = "BOM"; 
-
-
-                    }
 
                 }
 
