@@ -8,10 +8,6 @@ namespace Minesweeper {
     public class GameTile {
 
         // remove later
-        public int index   = -1;
-        SolidColorBrush clr = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
-
-
 
         public bool isMine = false;
         public int surroundingBombs = 0; 
@@ -27,16 +23,6 @@ namespace Minesweeper {
         public string Txt {
             get { return txt; }
             set { txt = value; }
-        }
-
-        public SolidColorBrush Clr {
-            get { return clr; }
-            set { clr = value; }
-        }
-
-        public int Index {
-            get { return index; }
-            set { index = value; }
         }
 
         public bool IsMine {
