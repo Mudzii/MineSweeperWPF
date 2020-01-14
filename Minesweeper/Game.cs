@@ -46,8 +46,8 @@ namespace Minesweeper {
 
 
         // timer variables 
-        private DispatcherTimer dTimer;
-        private int gTime;
+        //private DispatcherTimer dTimer;
+        //private int gTime;
 
         // game mode variables
         private bool gameOver = false;
@@ -59,6 +59,8 @@ namespace Minesweeper {
             get { return gameTiles; }
             set { gameTiles = value; }
         }
+
+        
 
         public int NrRows {
             get { return rows; }
@@ -100,11 +102,11 @@ namespace Minesweeper {
             set { gameOver = value; }
         }
 
-        public int GameTime {
-            get { return gTime; }
-            set { gTime = value; }
+        //public int GameTime {
+        //    get { return gTime; }
+        //    set { gTime = value; }
 
-        }
+        //}
 
 
 
@@ -117,24 +119,26 @@ namespace Minesweeper {
 
         // Init functions ===============
 
-        private void TimeTick(object sender, EventArgs e) {
+        //public void TimeTick(object sender, EventArgs e) {
 
-            gTime++;             
-        }
+        //    gTime++;             
+        //}
 
-        private void initializeTimer() {
+        //private void initializeTimer() {
 
-            dTimer = new DispatcherTimer();
-            dTimer.Interval = TimeSpan.FromSeconds(1);
-            dTimer.Tick += TimeTick; 
-        }
+        //    dTimer = new DispatcherTimer();
+        //    dTimer.Interval = TimeSpan.FromSeconds(1);
+        //    dTimer.Tick += TimeTick; 
+        //}
 
         public void InitializeGame() {
 
-            initializeTimer();
+            //initializeTimer();
             minesLeft = mineCount;
 
-            gameTiles = new List<Tile>(); 
+            gameTiles = new List<Tile>();
+            initializeTiles();
+
         }
 
 
@@ -356,7 +360,12 @@ namespace Minesweeper {
             }
         }
 
-        public void RevealTile(Tile tile) {
+        public void RevealTile(int ind) {
+
+            Tile tile = gameTiles[ind];
+
+            //if (gTime == 0)
+            //    dTimer.Start(); 
 
             if(tile.gTile.isDismantled == false) {
 
@@ -470,18 +479,20 @@ namespace Minesweeper {
 
             dismantledTiles = 0; 
             minesCreated    = false;
-   
-            gTime = 0;
-            gameTiles = null;
-            gameOver  = false;
 
+            //gTime = 0;
+
+            GameTiles = null; 
+            //gameTiles = null;
+            gameOver  = false;
+      
             initializeTiles(); 
 
         }
 
         public void EndGame() {
 
-            dTimer.Stop(); 
+            //dTimer.Stop(); 
 
             foreach(Tile t in gameTiles) {
 

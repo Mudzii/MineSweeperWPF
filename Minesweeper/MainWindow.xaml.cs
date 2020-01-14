@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 
 using System.Diagnostics;       //debug
 using System.Windows.Threading; //for dispatcherTimer
-
+using static Minesweeper.Game;
 
 namespace Minesweeper {
     /// <summary>
@@ -50,15 +50,122 @@ namespace Minesweeper {
             // initialize 
             initTimer();
             gameLogic = new Game();
-            gameLogic.minesLeft = gameLogic.mines; 
-            tileButtons = new List<Button>(); 
+            //gameLogic.minesLeft = gameLogic.mines; 
+            //tileButtons = new List<Button>(); 
             this.DataContext = gameLogic;
-            initTiles();
- 
+
+
+            gameLogic.InitializeGame();
+            AddButtons();
+            
+
+            //gameLogic.NewGame(); 
+
+
+
+            //initTiles();
+
+
+
+        }
+
+        private void GameTick(object sender, EventArgs e) {
+
+            gTimer++;
+            timerTextBox.Text = gTimer.ToString();
+        }
+
+        private void initTimer() {
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += GameTick;
+        }
+
+        private void StartButton(object sender, RoutedEventArgs e) {
+
+            timer.Stop();
+            gameLogic.NewGame();
+            AddButtons(); 
+
+        }
+
+        private void MouseButtonClick(object sender, MouseButtonEventArgs e) {
+
+            if (e.ChangedButton == MouseButton.Right) {
+                RightClick(sender, e);
+            }
+
+            else if (e.ChangedButton == MouseButton.Middle) {
+                MiddleClick(sender, e);
+            }
+
+
+        }
+
+        private void MiddleClick(object sender, RoutedEventArgs e) {
+
+            //if you middle-click a number, and it is surrounded by exactly that many flags 
+            //(as indicated by the number), all covered tiles become uncovered
+
+            Button b = sender as Button;
+            int x = Int32.Parse((sender as Button).Tag.ToString());
+
            
+
+        }
+
+        private void RightClick(object sender, RoutedEventArgs e) {
+
+            Button b = sender as Button;
+            //int x = Int32.Parse((sender as Button).Tag.ToString());
+        }
+
+        private void ClickedTile(object sender, RoutedEventArgs e) {
+
+            if (gTimer == 0)
+                timer.Start(); 
+
+            Button b = sender as Button;
+            int x = Int32.Parse((sender as Button).Tag.ToString());
+
+            gameLogic.RevealTile(x); 
+        }
+
+        public void AddButtons() {
+
+            List<Tile> gTile = gameLogic.GameTiles; 
+
+            foreach(Tile t in gTile) {
+
+                t.gButton.Click += ClickedTile;
+                t.gButton.MouseDown += MouseButtonClick;
+                t.gButton.FontWeight = FontWeights.Bold; 
+
+                Binding bindingTxt = new Binding();
+                bindingTxt.Source = t.gTile.Txt;
+                t.gButton.SetBinding(Button.ContentProperty, bindingTxt);
+
+                Binding bindingTag = new Binding();
+                bindingTag.Source = t.index;
+                t.gButton.SetBinding(Button.TagProperty, bindingTag);
+
+            }
+
+            ICMineField.Items.Clear(); 
+            gameLogic.GameTiles = gTile;
+
+            foreach (Tile t in gTile) {
+
+                ICMineField.Items.Add(t.gButton);
+            }
+
+          
+            //ICMineField.ItemsSource = tileButtons; 
+
         }
 
 
+        /* 
         private void MineCount() {
 
             int totalMineCnt = gameLogic.minesLeft - gameLogic.dismantledTiles;
@@ -122,7 +229,7 @@ namespace Minesweeper {
 
                     tileButtons.Add(tb);
 
-                    
+
 
                     newTiles.Add(newTile);
                     tileIndex++;
@@ -133,7 +240,7 @@ namespace Minesweeper {
 
             AddButtons(); 
             Tiles = newTiles;
-           
+
         }
 
         private void CreateMines(List<GameTile> t) {
@@ -197,7 +304,7 @@ namespace Minesweeper {
             timer.Stop();
             //gameState = GameState.NEW_GAME;
 
-            
+
             Tiles = null;
             tileButtons = null;
             tileButtons = new List<Button>();
@@ -211,22 +318,22 @@ namespace Minesweeper {
 
             initTiles(); 
             gTimer = 0;
-            
+
         }
-            
+
         private void GameStatus() {
 
-           
+
             // if all tiles but the ones with mines have been revealed, game is won
             if (!tiles.Any(x => x.isMine == false && x.revealed == false)) {
-                    
+
                 GameEnd(); 
             }
 
         }
 
         private void GameEnd() {
-      
+
             timer.Stop();
 
             foreach(GameTile t in tiles) {
@@ -237,7 +344,7 @@ namespace Minesweeper {
                     tileButtons[t.index].Content = "F";
                     tileButtons[t.index].Foreground = Brushes.DarkRed;
                 }
-               
+
             }
 
             if (!gameEnded) {
@@ -312,27 +419,27 @@ namespace Minesweeper {
 
                     else
                         tileButtons[tile.index].Foreground = Brushes.Red;
-                
+
                 }
 
 
             }
         }
-       
+
         private void RevealNeightbours(GameTile t) {
 
             int tileRow = t.r;
             int tileCol = t.c; 
             var nTiles = SurroundingTiles(tileRow, tileCol);
 
-          
+
             foreach (GameTile gt in nTiles) {
 
                 if(gt.revealed == false && gt.isDismantled == false) {
                     gt.revealed = true;
 
                     if (gt.isMine == true && gt.isDismantled == false){
-                        
+
                         tileButtons[gt.index].Background = Brushes.Red;
                         tileButtons[gt.index].Foreground = Brushes.White;
                         tileButtons[gt.index].Content = "BOM";
@@ -369,7 +476,7 @@ namespace Minesweeper {
 
         private void MouseButtonClick(object sender, MouseButtonEventArgs e) {
 
-           
+
 
             if (e.ChangedButton == MouseButton.Right) {
                 RightClick(sender, e); 
@@ -378,7 +485,7 @@ namespace Minesweeper {
             else if(e.ChangedButton == MouseButton.Middle) {
                 MiddleClick(sender, e);
             }
-            
+
 
         }
 
@@ -403,7 +510,7 @@ namespace Minesweeper {
                 if(nDisarmed == t.surroundingBombs) {
 
                     RevealNeightbours(t); 
-                   
+
                 }
 
 
@@ -461,11 +568,11 @@ namespace Minesweeper {
 
             Button b = sender as Button;
             int x = Int32.Parse((sender as Button).Tag.ToString());
-            
+
             GameTile t = tiles[x];
 
             if(tiles[x].isDismantled == false) {
-              
+
                 t.revealed = true;
 
                 if (!minesCreated) {
@@ -513,12 +620,6 @@ namespace Minesweeper {
 
         }
 
-        public void AddButtons() {
-
-            ICMineField.ItemsSource = tileButtons; 
-
-        }
-
         public List<GameTile> Tiles {
             get { return tiles; }
 
@@ -527,6 +628,9 @@ namespace Minesweeper {
                 //ICMineField.ItemsSource = tiles;
             }
         }
+        */
+
+
 
 
 
