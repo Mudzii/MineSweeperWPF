@@ -30,29 +30,77 @@ namespace Minesweeper {
         private DispatcherTimer timer;
         private int gTimer;
 
+        Image sImageDef;
+        Image sImagePushed;
+        Image sImageSurp;
+        Image sImageWin;
+        Image sImageLose;
+
+
         // window init
         public MainWindow() {
             InitializeComponent();
 
             this.Title = "Minesweeper";
-            startButton.Content = "Start";
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
+  
             // initialize 
             initializeTimer();
             gameLogic = new Game();
             this.DataContext = gameLogic;
 
+            InitializeImages(true); 
             gameLogic.InitializeGame();
+
+
             AddButtons();
+            startButton.Content = sImageDef;
         }
 
         private void GameTick(object sender, EventArgs e) {
 
             gTimer++;
             timerTextBox.Text = gTimer.ToString();
-            GameStatusUpdate(); 
+            if(gTimer > 0)
+                GameStatusUpdate(); 
         }
+
+        private void InitializeImages(bool init) {
+
+
+            if (init) {
+
+                sImageDef = new Image();
+                sImageDef.Source = new BitmapImage(new Uri("/assets/smileyTile.png", UriKind.Relative));
+
+                sImagePushed = new Image();
+                sImagePushed.Source = new BitmapImage(new Uri("/assets/clickedSmiley.png", UriKind.Relative));
+
+                sImageSurp = new Image();
+                sImageSurp.Source = new BitmapImage(new Uri("/assets/surpTile.png", UriKind.Relative));
+
+                sImageWin = new Image();
+                sImageWin.Source = new BitmapImage(new Uri("/assets/winTile.png", UriKind.Relative));
+
+                sImageLose = new Image();
+                sImageLose.Source = new BitmapImage(new Uri("/assets/qmTile.png", UriKind.Relative));
+
+
+            }
+
+            else {
+
+                sImageWin.Source    = null;
+                sImageDef.Source    = null;
+                sImageLose.Source   = null;
+                sImageSurp.Source   = null;
+                sImagePushed.Source = null;
+            }
+
+            int i = 0; 
+        }
+
 
         private void initializeTimer() {
             timer = new DispatcherTimer();
@@ -60,11 +108,22 @@ namespace Minesweeper {
             timer.Tick += GameTick;
         }
 
+        private void startButtonDown(object sender, MouseButtonEventArgs e) {
+
+            startButton.Content = sImagePushed;
+
+        }
+
         private void StartButton(object sender, RoutedEventArgs e) {
 
+
+            
+            //startButton.Content = sImageDef; 
+            
             timer.Stop();
             gTimer = 0; 
             timerTextBox.Text = "0";
+
             mineTextBox.Text = gameLogic.MineAmount.ToString(); 
 
             gameLogic.NewGame();
@@ -87,12 +146,13 @@ namespace Minesweeper {
 
                 timer.Stop(); 
                 mineTextBox.Text  = "0";
-                MessageBox.Show("Congratulations, You Won! Your time was " + gTimer + "seconds");
+                MessageBox.Show("Congratulations, You Won! Your time was: " + gTimer + " seconds");
             }
 
             else if (gameLost) {
                 timer.Stop();
-                mineTextBox.Text = gameLogic.MineAmount.ToString();
+                int mineC = gameLogic.MineAmount - gameLogic.DismantledTiles; 
+                mineTextBox.Text = mineC.ToString();
 
                 MessageBox.Show("You lost!");
             }
@@ -150,7 +210,9 @@ namespace Minesweeper {
 
             UnsubEvent();
             timer.Tick -= GameTick;
-            timer = null; 
+            timer = null;
+
+            InitializeImages(false); 
 
             gameLogic.UninitializeGame();
             gameLogic = null;
@@ -206,6 +268,7 @@ namespace Minesweeper {
 
         }
 
+        
     }
 
 }

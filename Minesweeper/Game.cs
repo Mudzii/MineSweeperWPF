@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Media;
 using System.Windows.Controls;  // button
 using System.Windows.Threading; // dispatcherTimer
+using System.Windows.Media.Imaging;
 
 namespace Minesweeper {
 
@@ -12,13 +13,11 @@ namespace Minesweeper {
 
 
         // Variables ===============
-        //public int mines = 10;
-        //public int minesLeft;
-        //public int dismantledTiles = 0;
-        //public bool gameEnded = false;
+        Image tileImage;
+        Image flagImage;
+        Image qImage;
+        Image mineImage;
 
-
-        // new Variables =========== 
 
         SolidColorBrush cGrey = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
         SolidColorBrush cFlag = Brushes.DarkRed;
@@ -36,12 +35,12 @@ namespace Minesweeper {
         public int columns = 9;
 
         
-        public List<Tile> gameTiles;
+        private List<Tile> gameTiles;
 
         // mine varialbes
-        public int minesLeft  = 0; 
+        private int minesLeft  = 0; 
         private int mineCount = 10;
-        public int dismantledTiles = 0; 
+        private int dismantledTiles = 0; 
         private bool minesCreated  = false;
 
         // game mode variables
@@ -68,7 +67,6 @@ namespace Minesweeper {
 
             }
         }
-
 
         public bool MinesCreated {
             get { return minesCreated; }
@@ -106,8 +104,13 @@ namespace Minesweeper {
         public void InitializeGame() {
 
             //initializeTimer();
-            minesLeft = mineCount;
+            //minesLeft = mineCount;
+            //qImage    = new BitmapImage();
+            //tileImage = new BitmapImage();
+            //flagImage = new BitmapImage();
+            //mineImage = new BitmapImage();
 
+            minesLeft = mineCount; 
             gameTiles = new List<Tile>();
             initializeTiles();
 

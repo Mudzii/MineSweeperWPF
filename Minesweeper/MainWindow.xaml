@@ -9,6 +9,7 @@
          
             
         Title="Minesweeper" 
+            Icon="/assets/mine.png"
             Height="650" 
             Width="550" 
             ResizeMode="NoResize" 
@@ -42,7 +43,7 @@
             <!-- End options menu -->
            
             <!-- Game info (timer etc) -->
-            <Grid x:Name="infoMenu" Height="35">
+            <Grid x:Name="infoMenu" Height="55">
 
                 <!-- Grid definition -->
                 <Grid.ColumnDefinitions>
@@ -61,7 +62,8 @@
                            Padding="5 0 5 0"
                            Grid.Column="0" 
                            Text="0" 
-                           FontSize="22"
+                           Height="50"
+                           FontSize="32"
                            TextAlignment="Right"
                            
                            FontWeight="Bold" />
@@ -70,8 +72,12 @@
                         Margin="0 5 0 0" 
                         Background="#bdbdbd" 
                         Grid.Column="2" 
+                        Height="50"
+                        Width="50"
                         Content="" 
+                        MouseLeftButtonDown="startButtonDown"
                         Click="StartButton"
+                        
                         />
                 
                 <TextBlock x:Name="timerTextBox" 
@@ -80,9 +86,9 @@
                            Margin="0 5 0 0" 
                            Padding="5 0 5 0"
                            Grid.Column="4" 
-                           
+                           Height="50"
                            Text="0"           
-                           FontSize="22"
+                           FontSize="32"
                            TextAlignment="Right"
                            
                            FontWeight="Bold" />

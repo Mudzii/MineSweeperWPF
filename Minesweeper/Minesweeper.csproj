@@ -7,11 +7,35 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="resources\" />
+    <None Remove="assets\clickedSmiley.png" />
+    <None Remove="assets\defTile.png" />
+    <None Remove="assets\flag.png" />
+    <None Remove="assets\flagTile.png" />
+    <None Remove="assets\gameOverTile.png" />
+    <None Remove="assets\mine.png" />
+    <None Remove="assets\mineTile.png" />
+    <None Remove="assets\qmTile.png" />
+    <None Remove="assets\smileyTile.png" />
+    <None Remove="assets\surpTile.png" />
+    <None Remove="assets\winTile.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Utilities" Version="16.4.29519.181" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\clickedSmiley.png" />
+    <Resource Include="assets\defTile.png" />
+    <Resource Include="assets\flag.png" />
+    <Resource Include="assets\flagTile.png" />
+    <Resource Include="assets\gameOverTile.png" />
+    <Resource Include="assets\mine.png" />
+    <Resource Include="assets\mineTile.png" />
+    <Resource Include="assets\qmTile.png" />
+    <Resource Include="assets\smileyTile.png" />
+    <Resource Include="assets\surpTile.png" />
+    <Resource Include="assets\winTile.png" />
   </ItemGroup>
 
 </Project>
