@@ -21,8 +21,10 @@ namespace Minesweeper {
         // new Variables =========== 
 
         SolidColorBrush cGrey = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
-        SolidColorBrush cFlag = Brushes.DarkRed; 
+        SolidColorBrush cFlag = Brushes.DarkRed;
 
+        string sFlag     = "F";
+        string sQuestion = "?"; 
 
         public struct Tile {
             public int index;
@@ -173,13 +175,83 @@ namespace Minesweeper {
 
             foreach(Tile tile in gTiles) {
 
+                if(tile.gTile.isMine == false) {
+
+                    int mineTile = 0;
+                    var nTiles = SurroundingTiles(tile.gTile.r, tile.gTile.c); 
+
+                    foreach(Tile t in nTiles) {
+                        if (t.gTile.isMine)
+                            mineTile++; 
+                    }
+
+                    tile.gTile.surroundingBombs = mineTile;
+
+                    if (mineTile == 1)
+                        tile.gButton.Foreground = Brushes.Blue; 
+
+                    else if(mineTile == 2)
+                        tile.gButton.Foreground = Brushes.Green;
+
+                    else
+                        tile.gButton.Foreground = Brushes.Red;
+
+
+
+                }
+
             }
 
         }
 
+        private void RevealNeighbours(Tile gTile) {
+
+            var nTiles = SurroundingTiles(gTile.gTile.r, gTile.gTile.c);
+            foreach (Tile gt in nTiles) {
+
+                if(gt.gTile.revealed == false && gt.gTile.isDismantled == false) {
+                    gt.gTile.revealed = true;
+
+                    if (gt.gTile.isMine == true && gt.gTile.isDismantled == false) {
+
+                        gt.gButton.Background = Brushes.Red;
+                        gt.gButton.Background = Brushes.White;
+                        gt.gButton.Content = "BOM";
+                        UncoverMines();
+                        return;              
+                     }
+
+                    if (!gt.gTile.isMine) {
+
+                        if(gt.gTile.surroundingBombs == 0) {
+
+                            gt.gButton.Content = ""; 
+                            gt.gButton.IsHitTestVisible = false;
+                            gt.gButton.Background = Brushes.DarkGray;
+
+                            RevealNeighbours(gt); 
+
+                        }
+
+                        else {
+                            gt.gButton.Background = Brushes.DarkGray;
+                            gt.gButton.Content = gt.gTile.surroundingBombs.ToString(); 
+                        }
+
+                    }
+
+                }
+
+            }
+
+            GameStatus(); 
+        }
+
         private Tile CreateTile(int index, int row, int col) {
 
-            Tile temp = new Tile();
+            Tile temp    = new Tile();
+            temp.gTile   = new GameTile();
+            temp.gButton = new Button(); 
 
             temp.index = index;
 
@@ -209,6 +281,7 @@ namespace Minesweeper {
 
             int tileIndex = 0;
             List<Tile> newTiles = new List<Tile>(); 
+            
 
             for(int i = 0; i < rows; i++) {
                 for(int j = 0; j < columns; j++) {
@@ -223,8 +296,155 @@ namespace Minesweeper {
             GameTiles = newTiles; 
         }
 
+        private void CreateMines(List<Tile> gTiles) {
+
+            Random rand = new Random();
+            int len = gTiles.Count(); 
+
+            int m = 0; 
+            while(m < mineCount) {
+
+                int nr = rand.Next(0, len);
+                if(!gTiles[nr].gTile.isMine && gTiles[nr].gTile.revealed == false) {
+                    gTiles[nr].gTile.isMine = true;
+                    m++; 
+                }
+            }
+
+
+            minesCreated = true; 
+        }
+
+        private void UncoverMines() {
+
+            int len = gameTiles.Count();
+
+            minesLeft = 0; 
+
+            foreach(Tile tile in gameTiles) {
+
+                tile.gButton.IsHitTestVisible = false;
+
+                if (tile.gTile.isMine) {
+
+                    tile.gTile.revealed  = true;
+                    tile.gButton.Content = "BOM";
+                    tile.gButton.Background = Brushes.Red; 
+                    tile.gButton.Foreground = Brushes.White;
+                }
+
+            }
+
+
+            gameOver = true;
+            EndGame(); 
+        }
         // ==============================
 
+        public void RevealTilesAroundFlag(Tile tile) {
+
+            if (tile.gTile.surroundingBombs > 0 && tile.gTile.revealed == true) {
+
+                int nDisarmed = 0;
+                var nTiles = SurroundingTiles(tile.gTile.r, tile.gTile.c);
+
+                nDisarmed = nTiles.Count(x => x.gTile.isDismantled == true);
+
+                if(nDisarmed == tile.gTile.surroundingBombs) {
+                    RevealNeighbours(tile); 
+                }
+            }
+        }
+
+        public void RevealTile(Tile tile) {
+
+            if(tile.gTile.isDismantled == false) {
+
+                tile.gTile.revealed = true;
+
+                if (!minesCreated) {
+                    CreateMines(gameTiles);
+                    GetSurroundingMines(gameTiles); 
+                    
+                }
+
+
+                if(tile.gButton.Content.ToString() == "?") {
+                    tile.gButton.Content = ""; 
+                }
+
+                if (tile.gTile.isMine == true) {
+
+                    tile.gButton.Content = "BOM";
+                    tile.gButton.Foreground = Brushes.White;
+                    tile.gButton.Background = Brushes.Red;
+
+                    gameOver = true;
+                    UncoverMines(); 
+
+                }
+
+                else {
+
+                    if(tile.gTile.surroundingBombs != 0) {
+                        tile.gButton.Content = tile.gTile.surroundingBombs.ToString();
+                        tile.gButton.Background = Brushes.DarkGray; 
+                    }
+
+                    else {
+                        tile.gButton.Background = Brushes.DarkGray;
+                        RevealNeighbours(tile);
+                    }
+
+
+                    FieldMineCount(); 
+                }
+
+            }
+
+            GameStatus(); 
+
+        }
+
+        public void MarkTile(Tile tile) {
+
+            if (tile.gButton.Content.ToString() == "") {
+                tile.gTile.isDismantled = true; 
+                tile.gButton.Content    = sFlag;
+                tile.gButton.Foreground = Brushes.DarkRed;
+
+                dismantledTiles++; 
+            }
+
+            else if (tile.gButton.Content.ToString() == sFlag) {
+                tile.gButton.Content = sQuestion;
+                tile.gButton.Foreground = Brushes.DarkMagenta;
+                tile.gTile.isDismantled = false;
+
+                dismantledTiles--; 
+            }
+
+            else if (tile.gButton.Content.ToString() == sQuestion) {
+                tile.gButton.Content = "";
+                tile.gTile.isDismantled = false;
+
+                if (tile.gTile.surroundingBombs == 1)
+                    tile.gButton.Foreground = Brushes.Blue;
+
+
+                else if (tile.gTile.surroundingBombs == 2)
+                    tile.gButton.Foreground = Brushes.Green;
+
+                else
+                    tile.gButton.Foreground = Brushes.Red;
+            }
+
+
+            FieldMineCount();
+            GameStatus(); 
+        }
+
+        // ==============================
         private int FieldMineCount() {
 
             int totalMineCnt = minesLeft - dismantledTiles;
