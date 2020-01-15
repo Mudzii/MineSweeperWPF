@@ -11,6 +11,11 @@ namespace Minesweeper {
 
     public class Game {
 
+        /* =================
+         EASY: 9x9 | 10
+         MEDIUM: 16x16 | 40
+         EXPERT: 16x30 | 99
+         =================  */
 
         public struct Tile {
             public int index;
@@ -21,17 +26,16 @@ namespace Minesweeper {
         }
 
         // Variables ===============
-
-        SolidColorBrush cGrey = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
-        
-        public int rows    = 9;
-        public int columns = 9;
-
         private List<Tile> gameTiles;
+        
+        // field size 
+        private int rows    = 16;
+        private int columns = 16;
+
 
         // mine varialbes
         private int minesLeft  = 0; 
-        private int mineCount = 10;
+        private int mineCount = 40;
         private int dismantledTiles = 0; 
         private bool minesCreated  = false;
 
@@ -39,8 +43,7 @@ namespace Minesweeper {
         private bool gameOver = false;
         private bool gameWon  = false; 
 
-        // Get/Set =================
-
+        // Get/Set  Functions ======
         public List<Tile> GameTiles {
             get { return gameTiles; }
             set { gameTiles = value; }
@@ -91,7 +94,7 @@ namespace Minesweeper {
         }
 
 
-        // ==============================
+        // Initialize functions =========
 
         public void UninitializeImages() {
 
@@ -119,18 +122,18 @@ namespace Minesweeper {
         public void UninitializeGame() {
 
             UninitializeImages(); 
-
             gameTiles = null;
-            cGrey = null; 
+            
         }
 
+        // Tile functions ===============
 
-        // ==============================
-
+        // get all the tiles surrounding a tile(3x3) 
         private List<Tile> SurroundingTiles(int row, int col) {
 
             List<Tile> neighbouringTiles = new List<Tile>();
 
+            // get the neighbouring tiles 
             Tile left  = gameTiles.Find(obj => obj.gTile.r == row && obj.gTile.c == (col - 1));
             Tile right = gameTiles.Find(obj => obj.gTile.r == row && obj.gTile.c == (col + 1));
 
@@ -142,7 +145,7 @@ namespace Minesweeper {
             Tile bottomLeft  = gameTiles.Find(obj => obj.gTile.r == (row + 1) && obj.gTile.c == (col - 1));
             Tile bottomRight = gameTiles.Find(obj => obj.gTile.r == (row + 1) && obj.gTile.c == (col + 1));
 
-            // check if objects are not null before adding
+            // check if objects are not null before adding (null means there is no tile)
             if (left.gTile != null) { neighbouringTiles.Add(left); }
             if (right.gTile != null) { neighbouringTiles.Add(right); }
 
@@ -157,15 +160,18 @@ namespace Minesweeper {
             return neighbouringTiles;
         }
 
+        // check how many mines surround a tile
         private void GetSurroundingMines(List<Tile> gTiles) {
 
             foreach(Tile tile in gTiles) {
 
+                // if the tile is not mine, check if there are surrounding mines
                 if(tile.gTile.isMine == false) {
 
                     int mineTile = 0;
                     var nTiles = SurroundingTiles(tile.gTile.r, tile.gTile.c); 
 
+                    // if any neighbour is mine, add to counter
                     foreach(Tile t in nTiles) {
                         if (t.gTile.isMine)
                             mineTile++; 
@@ -173,16 +179,30 @@ namespace Minesweeper {
 
                     tile.gTile.surroundingBombs = mineTile;
 
+                    // set foreground color based on surroundingMines
                     if (mineTile == 1)
                         tile.gButton.Foreground = Brushes.Blue; 
 
                     else if(mineTile == 2)
                         tile.gButton.Foreground = Brushes.Green;
 
-                    else
+                    else if(mineTile == 3)
                         tile.gButton.Foreground = Brushes.Red;
 
+                    else if (mineTile == 4)
+                        tile.gButton.Foreground = Brushes.DarkBlue;
 
+                    else if (mineTile == 5)
+                        tile.gButton.Foreground = Brushes.DarkRed;
+
+                    else if (mineTile == 6)
+                        tile.gButton.Foreground = Brushes.DarkCyan;
+
+                    else if (mineTile == 7)
+                        tile.gButton.Foreground = Brushes.Black;
+
+                    else 
+                        tile.gButton.Foreground = Brushes.DarkSlateGray;
 
                 }
 
@@ -190,31 +210,33 @@ namespace Minesweeper {
 
         }
 
+        // show all neighbouring tiles 
         private void RevealNeighbours(Tile gTile) {
 
+            // reveal the original tile clicked
             if(!gTile.gTile.isMine && gTile.gTile.surroundingBombs == 0) {
                 gTile.gButton.Content = "";
                 gTile.gButton.IsHitTestVisible = false;
                 gTile.gButton.Background = Brushes.DarkGray;
             }
 
+            // get neighbouring tiles
             var nTiles = SurroundingTiles(gTile.gTile.r, gTile.gTile.c);
             foreach (Tile gt in nTiles) {
 
+                // if it's still hidden and not dismantled (flagged) 
                 if(gt.gTile.revealed == false && gt.gTile.isDismantled == false) {
                     gt.gTile.revealed = true;
 
-                    if (gt.gTile.isMine == true && gt.gTile.isDismantled == false) {
-
-                        //gt.gButton.Background = Brushes.Red;
-                        //gt.gButton.Background = Brushes.White;
+                    // if it is a mine, game is lost
+                    if (gt.gTile.isMine) {
                         gt.gButton.Content = gt.tImages[3];
-
                         UncoverMines();
                         return;              
                      }
 
-                    if (!gt.gTile.isMine) {
+                    // else, reveal tiles
+                    else if (!gt.gTile.isMine) {
 
                         if(gt.gTile.surroundingBombs == 0) {
 
@@ -230,15 +252,6 @@ namespace Minesweeper {
                             gt.gButton.Background = Brushes.DarkGray;
                             gt.gButton.Content = gt.gTile.surroundingBombs.ToString(); 
 
-                            if (gt.gTile.surroundingBombs == 1)
-                                gt.gButton.Foreground = Brushes.Blue;
-
-                            else if (gt.gTile.surroundingBombs == 2)
-                                gt.gButton.Foreground = Brushes.Green;
-
-                            else
-                                gt.gButton.Foreground = Brushes.Red;
-
                         }
 
                     }
@@ -250,6 +263,7 @@ namespace Minesweeper {
             GameStatus(); 
         }
 
+        // create a tile 
         private Tile CreateTile(int index, int row, int col) {
 
             Tile temp    = new Tile();
@@ -257,7 +271,6 @@ namespace Minesweeper {
             temp.gButton = new Button();
             temp.tImages  = new List<Image>();
             
-
             temp.index = index;
 
             // Game tile
@@ -272,9 +285,6 @@ namespace Minesweeper {
             temp.gButton.Height   = 50;
             temp.gButton.FontSize = 16; 
             temp.gButton.Width    = temp.gButton.Height; 
-
-            temp.gButton.Foreground = cGrey;
-            temp.gButton.Background = cGrey;
             temp.gButton.IsHitTestVisible = true;
  
             // tile images
@@ -295,17 +305,16 @@ namespace Minesweeper {
             temp.tImages.Add(mineImage);
 
             // set button image to default tile
-            temp.gButton.Content = temp.tImages[0]; 
-
+            temp.gButton.Content = temp.tImages[0];
             return temp; 
         }
 
+        // create all tiles used 
         private void initializeTiles() {
 
             int tileIndex = 0;
             List<Tile> newTiles = new List<Tile>(); 
             
-
             for(int i = 0; i < rows; i++) {
                 for(int j = 0; j < columns; j++) {
 
@@ -319,12 +328,20 @@ namespace Minesweeper {
             GameTiles = newTiles; 
         }
 
-        // ==============================
+        // mine functions ===============
+
+        // make mines for the field
         private void CreateMines(List<Tile> gTiles) {
 
             Random rand = new Random();
             int len = gTiles.Count(); 
 
+            // if number of mines is bigger than the field, override count
+            if(mineCount > len) {
+                mineCount = (rows * columns) - 1; 
+            }
+
+            // randomize which tiles are mines 
             int m = 0; 
             while(m < mineCount) {
 
@@ -339,30 +356,25 @@ namespace Minesweeper {
             minesCreated = true; 
         }
 
+        // uncover all mines on the field 
         private void UncoverMines() {
 
-            int len = gameTiles.Count();
             minesLeft = 0; 
-
             foreach(Tile tile in gameTiles) {
-
-                //tile.gButton.IsHitTestVisible = false;
 
                 if (tile.gTile.isMine) {
 
                     tile.gTile.revealed  = true;
-                    tile.gButton.Content = tile.tImages[3];
-                    
+                    tile.gButton.Content = tile.tImages[3];  
                 }
-
             }
-
 
             gameOver = true;
             EndGame(); 
         }
         // ==============================
 
+        // MMC - reveal all tiles around clicked tile if surroundign flags = tiles surrounding bomb count  
         public void RevealTilesAroundFlag(int ind) {
 
             Tile tile = gameTiles[ind];
@@ -454,15 +466,15 @@ namespace Minesweeper {
                 tile.gButton.Content = tile.tImages[0];
                 tile.gTile.isDismantled = false;
 
-                if (tile.gTile.surroundingBombs == 1)
-                    tile.gButton.Foreground = Brushes.Blue;
+                //if (tile.gTile.surroundingBombs == 1)
+                //    tile.gButton.Foreground = Brushes.Blue;
 
 
-                else if (tile.gTile.surroundingBombs == 2)
-                    tile.gButton.Foreground = Brushes.Green;
+                //else if (tile.gTile.surroundingBombs == 2)
+                //    tile.gButton.Foreground = Brushes.Green;
 
-                else
-                    tile.gButton.Foreground = Brushes.Red;
+                //else
+                //    tile.gButton.Foreground = Brushes.Red;
             }
 
 

@@ -18,8 +18,6 @@ namespace Minesweeper {
         public int c = -1; 
         
 
-       
-
         public bool IsMine {
             get { return isMine; }
             set { isMine = value; }
