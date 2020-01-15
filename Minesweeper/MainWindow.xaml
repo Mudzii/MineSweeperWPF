@@ -6,8 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Minesweeper"
         mc:Ignorable="d"
-         
-            
+                 
         Title="Minesweeper" 
             Icon="/assets/mine.png"
             Height="650" 
@@ -18,11 +17,8 @@
             SizeToContent="WidthAndHeight"
             Closing="WindowClosing"    >
 
-
     <!--xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"-->
-
     <Border Padding="10" Background="#bdbdbd">
-
         <StackPanel Background="#bdbdbd">
             <!-- Options menu -->
             <!--<Grid x:Name="optionsMenu">
@@ -65,7 +61,6 @@
                            Height="50"
                            FontSize="32"
                            TextAlignment="Right"
-                           
                            FontWeight="Bold" />
 
                 <Button x:Name="startButton"
@@ -78,7 +73,7 @@
                         PreviewMouseDown="StartButtonDown"
                         PreviewMouseLeftButtonUp="StartButton"
                         />
-                
+
                 <TextBlock x:Name="timerTextBox" 
                            Background="#0c0c0c" 
                            Foreground="#f20000"
@@ -89,10 +84,7 @@
                            Text="0"           
                            FontSize="32"
                            TextAlignment="Right"
-                           
                            FontWeight="Bold" />
-
-
             </Grid>
             <!-- End game info -->
 
@@ -107,8 +99,8 @@
                               MinWidth="300" 
                               MinHeight="300"
                               Margin="5" >
-                    <!-- Templet for layout -->
-                    <!--  diag:PresentationTraceSources.TraceLevel=High-->
+                    
+                    <!-- Template for layout -->               
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid x:Name="mineFieldGrid" 
