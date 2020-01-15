@@ -12,29 +12,21 @@ namespace Minesweeper {
     public class Game {
 
 
-        // Variables ===============
-        Image tileImage;
-        Image flagImage;
-        Image qImage;
-        Image mineImage;
-
-
-        SolidColorBrush cGrey = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
-        SolidColorBrush cFlag = Brushes.DarkRed;
-
-        string sFlag     = "F";
-        string sQuestion = "?"; 
-
         public struct Tile {
             public int index;
             public GameTile gTile;
             public Button gButton;
+
+            public List<Image> tImages; 
         }
 
+        // Variables ===============
+
+        SolidColorBrush cGrey = (SolidColorBrush)(new BrushConverter().ConvertFrom("#bdbdbd"));
+        
         public int rows    = 9;
         public int columns = 9;
 
-        
         private List<Tile> gameTiles;
 
         // mine varialbes
@@ -101,22 +93,32 @@ namespace Minesweeper {
 
         // ==============================
 
+        public void UninitializeImages() {
+
+            foreach (Tile t in gameTiles) {
+
+                for (int i = 0; i < 4; i++) {
+
+                    t.tImages[0].Source = null;
+                }
+
+            }
+
+        }
+
         public void InitializeGame() {
 
-            //initializeTimer();
-            //minesLeft = mineCount;
-            //qImage    = new BitmapImage();
-            //tileImage = new BitmapImage();
-            //flagImage = new BitmapImage();
-            //mineImage = new BitmapImage();
-
-            minesLeft = mineCount; 
+            
+            minesLeft = mineCount;
+           
             gameTiles = new List<Tile>();
             initializeTiles();
 
         }
 
         public void UninitializeGame() {
+
+            UninitializeImages(); 
 
             gameTiles = null;
             cGrey = null; 
@@ -190,6 +192,12 @@ namespace Minesweeper {
 
         private void RevealNeighbours(Tile gTile) {
 
+            if(!gTile.gTile.isMine && gTile.gTile.surroundingBombs == 0) {
+                gTile.gButton.Content = "";
+                gTile.gButton.IsHitTestVisible = false;
+                gTile.gButton.Background = Brushes.DarkGray;
+            }
+
             var nTiles = SurroundingTiles(gTile.gTile.r, gTile.gTile.c);
             foreach (Tile gt in nTiles) {
 
@@ -198,9 +206,10 @@ namespace Minesweeper {
 
                     if (gt.gTile.isMine == true && gt.gTile.isDismantled == false) {
 
-                        gt.gButton.Background = Brushes.Red;
-                        gt.gButton.Background = Brushes.White;
-                        gt.gButton.Content = "BOM";
+                        //gt.gButton.Background = Brushes.Red;
+                        //gt.gButton.Background = Brushes.White;
+                        gt.gButton.Content = gt.tImages[3];
+
                         UncoverMines();
                         return;              
                      }
@@ -220,6 +229,16 @@ namespace Minesweeper {
                         else {
                             gt.gButton.Background = Brushes.DarkGray;
                             gt.gButton.Content = gt.gTile.surroundingBombs.ToString(); 
+
+                            if (gt.gTile.surroundingBombs == 1)
+                                gt.gButton.Foreground = Brushes.Blue;
+
+                            else if (gt.gTile.surroundingBombs == 2)
+                                gt.gButton.Foreground = Brushes.Green;
+
+                            else
+                                gt.gButton.Foreground = Brushes.Red;
+
                         }
 
                     }
@@ -235,12 +254,13 @@ namespace Minesweeper {
 
             Tile temp    = new Tile();
             temp.gTile   = new GameTile();
-            temp.gButton = new Button(); 
+            temp.gButton = new Button();
+            temp.tImages  = new List<Image>();
+            
 
             temp.index = index;
 
             // Game tile
-            temp.gTile.txt = ""; 
             temp.gTile.r   = row; 
             temp.gTile.c   = col;
             temp.gTile.revealed = false;
@@ -256,7 +276,26 @@ namespace Minesweeper {
             temp.gButton.Foreground = cGrey;
             temp.gButton.Background = cGrey;
             temp.gButton.IsHitTestVisible = true;
+ 
+            // tile images
+            Image defTileImage = new Image();
+            defTileImage.Source = new BitmapImage(new Uri("/assets/defTile.png", UriKind.Relative));
+            temp.tImages.Add(defTileImage);
 
+            Image flagTileImage = new Image();
+            flagTileImage.Source = new BitmapImage(new Uri("/assets/flagTile.png", UriKind.Relative));
+            temp.tImages.Add(flagTileImage);
+
+            Image qTileImage = new Image();
+            qTileImage.Source = new BitmapImage(new Uri("/assets/qmTile.png", UriKind.Relative));
+            temp.tImages.Add(qTileImage);
+
+            Image mineImage = new Image();
+            mineImage.Source = new BitmapImage(new Uri("/assets/mineTile.png", UriKind.Relative));
+            temp.tImages.Add(mineImage);
+
+            // set button image to default tile
+            temp.gButton.Content = temp.tImages[0]; 
 
             return temp; 
         }
@@ -303,7 +342,6 @@ namespace Minesweeper {
         private void UncoverMines() {
 
             int len = gameTiles.Count();
-
             minesLeft = 0; 
 
             foreach(Tile tile in gameTiles) {
@@ -313,9 +351,8 @@ namespace Minesweeper {
                 if (tile.gTile.isMine) {
 
                     tile.gTile.revealed  = true;
-                    tile.gButton.Content = "BOM";
-                    tile.gButton.Background = Brushes.Red; 
-                    tile.gButton.Foreground = Brushes.White;
+                    tile.gButton.Content = tile.tImages[3];
+                    
                 }
 
             }
@@ -347,9 +384,6 @@ namespace Minesweeper {
 
             Tile tile = gameTiles[ind];
 
-            //if (gTime == 0)
-            //    dTimer.Start(); 
-
             if(tile.gTile.isDismantled == false) {
 
                 tile.gTile.revealed = true;
@@ -360,15 +394,15 @@ namespace Minesweeper {
                     
                 }
 
+              
+                if (tile.gButton.Content == tile.tImages[2]) {
+                    tile.gButton.Content = "";
 
-                if(tile.gButton.Content.ToString() == "?") {
-                    tile.gButton.Content = ""; 
-                }
+                 }
 
                 if (tile.gTile.isMine == true) {
 
-                    tile.gButton.Content = "BOM";
-                    tile.gButton.Foreground = Brushes.White;
+                    tile.gButton.Content = tile.tImages[3];
                     tile.gButton.Background = Brushes.Red;
 
                     gameOver = true;
@@ -402,24 +436,22 @@ namespace Minesweeper {
 
             Tile tile = gameTiles[ind];
 
-            if (tile.gButton.Content.ToString() == "") {
-                tile.gTile.isDismantled = true; 
-                tile.gButton.Content    = sFlag;
-                tile.gButton.Foreground = Brushes.DarkRed;
+            if (tile.gButton.Content == tile.tImages[0]) {
+                tile.gTile.isDismantled = true;
+                tile.gButton.Content = tile.tImages[1]; 
 
                 dismantledTiles++; 
             }
 
-            else if (tile.gButton.Content.ToString() == sFlag) {
-                tile.gButton.Content = sQuestion;
-                tile.gButton.Foreground = Brushes.DarkMagenta;
+            else if (tile.gButton.Content == tile.tImages[1]) {
+                tile.gButton.Content = tile.tImages[2];
                 tile.gTile.isDismantled = false;
 
                 dismantledTiles--; 
             }
 
-            else if (tile.gButton.Content.ToString() == sQuestion) {
-                tile.gButton.Content = "";
+            else if (tile.gButton.Content == tile.tImages[2]) {
+                tile.gButton.Content = tile.tImages[0];
                 tile.gTile.isDismantled = false;
 
                 if (tile.gTile.surroundingBombs == 1)
@@ -455,6 +487,7 @@ namespace Minesweeper {
         }
 
         // Gameplay functions ===========
+    
 
         public void NewGame() {
 
@@ -464,11 +497,13 @@ namespace Minesweeper {
 
             dismantledTiles = 0; 
             minesCreated    = false;
+        
+            UninitializeImages();
 
             GameTiles = null; 
             gameOver  = false;
-            gameWon   = false; 
-      
+            gameWon   = false;
+
             initializeTiles(); 
 
         }
@@ -481,9 +516,8 @@ namespace Minesweeper {
                 t.gButton.IsHitTestVisible = false;
 
                 if (t.gTile.isMine && !gameOver) {
-
-                    t.gButton.Content = "F";
-                    t.gButton.Foreground = cFlag; 
+                    t.gButton.Content = t.tImages[1];
+                    
                 }
 
             }

@@ -74,10 +74,9 @@
                         Grid.Column="2" 
                         Height="50"
                         Width="50"
-                        Content="" 
-                        MouseLeftButtonDown="startButtonDown"
-                        Click="StartButton"
-                        
+                        Content=""       
+                        PreviewMouseDown="StartButtonDown"
+                        PreviewMouseLeftButtonUp="StartButton"
                         />
                 
                 <TextBlock x:Name="timerTextBox" 

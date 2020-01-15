@@ -37,7 +37,7 @@ namespace Minesweeper {
         Image sImageLose;
 
 
-        // window init
+        // window init (Main)
         public MainWindow() {
             InitializeComponent();
 
@@ -53,21 +53,19 @@ namespace Minesweeper {
             InitializeImages(true); 
             gameLogic.InitializeGame();
 
-
             AddButtons();
             startButton.Content = sImageDef;
         }
 
+        // timer update
         private void GameTick(object sender, EventArgs e) {
 
             gTimer++;
             timerTextBox.Text = gTimer.ToString();
-            if(gTimer > 0)
-                GameStatusUpdate(); 
         }
 
+        // initialize images used 
         private void InitializeImages(bool init) {
-
 
             if (init) {
 
@@ -84,7 +82,7 @@ namespace Minesweeper {
                 sImageWin.Source = new BitmapImage(new Uri("/assets/winTile.png", UriKind.Relative));
 
                 sImageLose = new Image();
-                sImageLose.Source = new BitmapImage(new Uri("/assets/qmTile.png", UriKind.Relative));
+                sImageLose.Source = new BitmapImage(new Uri("/assets/gameOverTile.png", UriKind.Relative));
 
 
             }
@@ -98,44 +96,46 @@ namespace Minesweeper {
                 sImagePushed.Source = null;
             }
 
-            int i = 0; 
         }
 
-
+        // initialize the timer used for the game
         private void initializeTimer() {
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += GameTick;
         }
 
-        private void startButtonDown(object sender, MouseButtonEventArgs e) {
+        // change icon if start button is pressed down
+        private void StartButtonDown(object sender, MouseButtonEventArgs e) {
 
-            startButton.Content = sImagePushed;
-
+            startButton.Content = sImagePushed;         
         }
 
-        private void StartButton(object sender, RoutedEventArgs e) {
-
-
+        // start button click for new game
+        private void StartButton(object sender, MouseButtonEventArgs e) {
+ 
+            startButton.Content = sImageDef; 
             
-            //startButton.Content = sImageDef; 
-            
+            // stop timer and reset all windows
             timer.Stop();
             gTimer = 0; 
             timerTextBox.Text = "0";
+            mineTextBox.Text = gameLogic.MineAmount.ToString();
+            UnsubEvent();
 
-            mineTextBox.Text = gameLogic.MineAmount.ToString(); 
-
+            // create new game and add buttons
             gameLogic.NewGame();
             AddButtons(); 
 
         }
 
+        // updates the "mine count" AKA mines - flagged mines
         private void UpdateMineCount() {
             int nrMines = gameLogic.FieldMineCount();
             mineTextBox.Text = nrMines.ToString();
         }
 
+        // check if game is won/ lost. Update mine count
         private void GameStatusUpdate() {
 
             bool gameWon  = gameLogic.GameWon; 
@@ -146,19 +146,23 @@ namespace Minesweeper {
 
                 timer.Stop(); 
                 mineTextBox.Text  = "0";
+                startButton.Content = sImageWin;
                 MessageBox.Show("Congratulations, You Won! Your time was: " + gTimer + " seconds");
             }
 
             else if (gameLost) {
+
                 timer.Stop();
                 int mineC = gameLogic.MineAmount - gameLogic.DismantledTiles; 
                 mineTextBox.Text = mineC.ToString();
+                startButton.Content = sImageLose;
 
                 MessageBox.Show("You lost!");
             }
 
         }
 
+        // check if RMC or MMC
         private void MouseButtonClick(object sender, MouseButtonEventArgs e) {
 
             if (e.ChangedButton == MouseButton.Right) {
@@ -166,43 +170,55 @@ namespace Minesweeper {
             }
 
             else if (e.ChangedButton == MouseButton.Middle) {
+                
+                startButton.Content = sImageSurp;
                 MiddleClick(sender, e);
             }
 
 
         }
 
-        private void MiddleClick(object sender, RoutedEventArgs e) {
+        // if MMC release, change image to def start image
+        private void MouseUpMiddle(object sender, MouseButtonEventArgs e) {
 
-            //if you middle-click a number, and it is surrounded by exactly that many flags 
-            //(as indicated by the number), all covered tiles become uncovered
+             if (e.ChangedButton == MouseButton.Middle) {
+                startButton.Content = sImageDef;
+            }         
+        }
+
+        // MMC - reveal surrounding if flagged
+        private void MiddleClick(object sender, RoutedEventArgs e) {
 
             Button b = sender as Button;
             int x = Int32.Parse((sender as Button).Tag.ToString());
 
             gameLogic.RevealTilesAroundFlag(x);
-            UpdateMineCount(); 
+            GameStatusUpdate(); 
         }
 
+        // RMC - mark a tile
         private void RightClick(object sender, RoutedEventArgs e) {
 
             Button b = sender as Button;
             int x = Int32.Parse((sender as Button).Tag.ToString());
 
             gameLogic.MarkTile(x);
-            UpdateMineCount(); 
+            GameStatusUpdate();
         }
 
+        // LMC - reveal tiles
         private void ClickedTile(object sender, RoutedEventArgs e) {
 
+            // if timer hasn't started, start it
             if (gTimer == 0)
                 timer.Start(); 
 
             Button b = sender as Button;
             int x = Int32.Parse((sender as Button).Tag.ToString());
 
-            gameLogic.RevealTile(x);
-            UpdateMineCount(); 
+            gameLogic.RevealTile(x);    
+            GameStatusUpdate();
+
         }
 
         // event called just as window closes
@@ -212,13 +228,18 @@ namespace Minesweeper {
             timer.Tick -= GameTick;
             timer = null;
 
-            InitializeImages(false); 
+            InitializeImages(false);
 
+            startButton.PreviewMouseDown -= StartButtonDown;
+            startButton.PreviewMouseLeftButtonUp -= StartButton;
+
+            UnsubEvent(); 
             gameLogic.UninitializeGame();
             gameLogic = null;
             
         }
 
+        // remove events added to tile buttons 
         public void UnsubEvent() {
 
             List<Tile> gTiles = gameLogic.GameTiles;
@@ -226,7 +247,9 @@ namespace Minesweeper {
             foreach(Tile t in gTiles) {
 
                 t.gButton.Click -= ClickedTile;
-                t.gButton.MouseDown -= MouseButtonClick; 
+                t.gButton.MouseDown -= MouseButtonClick;
+                t.gButton.PreviewMouseUp -= MouseUpMiddle;
+
             }
 
             gameLogic.GameTiles = gTiles;
@@ -234,41 +257,40 @@ namespace Minesweeper {
 
         }
 
+        // add event/binding and buttons to field
         public void AddButtons() {
 
-            UnsubEvent(); 
             List<Tile> gTiles = gameLogic.GameTiles;
             ICMineField.Items.Clear();
             
             foreach (Tile t in gTiles) {
 
+                // add click events for buttons 
                 t.gButton.Click += ClickedTile;
                 t.gButton.MouseDown += MouseButtonClick;
+                t.gButton.PreviewMouseUp += MouseUpMiddle;
+                
                 t.gButton.FontWeight = FontWeights.Bold; 
 
-                Binding bindingTxt = new Binding();
-                bindingTxt.Source = t.gTile.Txt;
-                t.gButton.SetBinding(Button.ContentProperty, bindingTxt);
-
+                // bind tile index to button
                 Binding bindingTag = new Binding();
                 bindingTag.Source = t.index;
                 t.gButton.SetBinding(Button.TagProperty, bindingTag);
             }
 
+            // set new list to gameTiles
             gameLogic.GameTiles = gTiles;
            
+            // add buttons from list to mine field
             foreach (Tile t in gTiles) {
-
                 ICMineField.Items.Add(t.gButton);
             }
 
             gTiles = null;
-            
-            //ICMineField.ItemsSource = tileButtons; 
 
         }
 
-        
+       
     }
 
 }

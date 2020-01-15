@@ -7,8 +7,7 @@ namespace Minesweeper {
    
     public class GameTile {
 
-        // remove later
-
+     
         public bool isMine = false;
         public int surroundingBombs = 0; 
 
@@ -17,13 +16,9 @@ namespace Minesweeper {
 
         public int r = -1;
         public int c = -1; 
-        public string txt = "";
+        
 
-
-        public string Txt {
-            get { return txt; }
-            set { txt = value; }
-        }
+       
 
         public bool IsMine {
             get { return isMine; }
