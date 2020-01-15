@@ -22,13 +22,15 @@ namespace Minesweeper {
 
     public partial class MainWindow : Window {
 
+        // Variables ===============
         private Game gameLogic;
+        private List<Image> sImages;
+
         private DispatcherTimer timer;
         private int gTimer;
 
-        private List<Image> sImages;
 
-        // window init (Main)
+        // window init (Main) ======
         public MainWindow() {
             InitializeComponent();
 
@@ -47,12 +49,23 @@ namespace Minesweeper {
             startButton.Content = sImages[0];
         }
 
+        // Timer functions =========
+
         // timer update
         private void GameTick(object sender, EventArgs e) {
 
             gTimer++;
             timerTextBox.Text = gTimer.ToString();
         }
+
+        // initialize the timer used for the game
+        private void initializeTimer() {
+            timer          = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick    += GameTick;
+        }
+
+        // =========================
 
         // initialize images used 
         private void InitializeImages(bool init) {
@@ -94,12 +107,14 @@ namespace Minesweeper {
 
         }
 
-        // initialize the timer used for the game
-        private void initializeTimer() {
-            timer          = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick    += GameTick;
+        // updates the "mine count" AKA mines - flagged mines
+        private void UpdateMineCount() {
+            int nrMines = gameLogic.FieldMineCount();
+            mineTextBox.Text = nrMines.ToString();
         }
+
+
+        // Button functions ========
 
         // change icon if start button is pressed down
         private void StartButtonDown(object sender, MouseButtonEventArgs e) {
@@ -122,39 +137,6 @@ namespace Minesweeper {
             // create new game and add buttons
             gameLogic.NewGame();
             AddButtons(); 
-
-        }
-
-        // updates the "mine count" AKA mines - flagged mines
-        private void UpdateMineCount() {
-            int nrMines      = gameLogic.FieldMineCount();
-            mineTextBox.Text = nrMines.ToString();
-        }
-
-        // check if game is won/ lost. Update mine count
-        private void GameStatusUpdate() {
-
-            bool gameWon  = gameLogic.GameWon; 
-            bool gameLost = gameLogic.GameOver;
-
-            UpdateMineCount(); 
-            if (gameWon) {
-
-                timer.Stop(); 
-                mineTextBox.Text    = "0";
-                startButton.Content = sImages[3];
-                MessageBox.Show("Congratulations, You Won! Your time was: " + gTimer + " seconds");
-            }
-
-            else if (gameLost) {
-
-                timer.Stop();
-                int mineC = gameLogic.MineAmount - gameLogic.DismantledTiles; 
-                mineTextBox.Text    = mineC.ToString();
-                startButton.Content = sImages[4];
-
-                MessageBox.Show("You lost!");
-            }
 
         }
 
@@ -192,6 +174,33 @@ namespace Minesweeper {
             GameStatusUpdate(); 
         }
 
+    // check if game is won/ lost. Update mine count
+        private void GameStatusUpdate() {
+
+            bool gameWon  = gameLogic.GameWon; 
+            bool gameLost = gameLogic.GameOver;
+
+            UpdateMineCount(); 
+            if (gameWon) {
+
+                timer.Stop(); 
+                mineTextBox.Text    = "0";
+                startButton.Content = sImages[3];
+                MessageBox.Show("Congratulations, You Won! Your time was: " + gTimer + " seconds");
+            }
+
+            else if (gameLost) {
+
+                timer.Stop();
+                int mineC = gameLogic.MineAmount - gameLogic.DismantledTiles; 
+                mineTextBox.Text    = mineC.ToString();
+                startButton.Content = sImages[4];
+
+                MessageBox.Show("You lost!");
+            }
+
+        }
+
         // RMC - mark a tile
         private void RightClick(object sender, RoutedEventArgs e) {
 
@@ -216,6 +225,8 @@ namespace Minesweeper {
             GameStatusUpdate();
 
         }
+
+        // =========================
 
         // event called just as window closes
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e) {
