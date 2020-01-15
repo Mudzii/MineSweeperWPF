@@ -30,12 +30,7 @@ namespace Minesweeper {
         private DispatcherTimer timer;
         private int gTimer;
 
-        Image sImageDef;
-        Image sImagePushed;
-        Image sImageSurp;
-        Image sImageWin;
-        Image sImageLose;
-
+        public List<Image> sImages;
 
         // window init (Main)
         public MainWindow() {
@@ -54,7 +49,7 @@ namespace Minesweeper {
             gameLogic.InitializeGame();
 
             AddButtons();
-            startButton.Content = sImageDef;
+            startButton.Content = sImages[0];
         }
 
         // timer update
@@ -69,31 +64,37 @@ namespace Minesweeper {
 
             if (init) {
 
-                sImageDef = new Image();
+                sImages = new List<Image>(); 
+
+                Image sImageDef = new Image();
                 sImageDef.Source = new BitmapImage(new Uri("/assets/smileyTile.png", UriKind.Relative));
+                sImages.Add(sImageDef);
 
-                sImagePushed = new Image();
+                Image sImagePushed = new Image();
                 sImagePushed.Source = new BitmapImage(new Uri("/assets/clickedSmiley.png", UriKind.Relative));
+                sImages.Add(sImagePushed);
 
-                sImageSurp = new Image();
+                Image sImageSurp = new Image();
                 sImageSurp.Source = new BitmapImage(new Uri("/assets/surpTile.png", UriKind.Relative));
+                sImages.Add(sImageSurp);
 
-                sImageWin = new Image();
+                Image sImageWin = new Image();
                 sImageWin.Source = new BitmapImage(new Uri("/assets/winTile.png", UriKind.Relative));
+                sImages.Add(sImageWin);
 
-                sImageLose = new Image();
+                Image sImageLose = new Image();
                 sImageLose.Source = new BitmapImage(new Uri("/assets/gameOverTile.png", UriKind.Relative));
+                sImages.Add(sImageLose);
 
 
             }
 
             else {
 
-                sImageWin.Source    = null;
-                sImageDef.Source    = null;
-                sImageLose.Source   = null;
-                sImageSurp.Source   = null;
-                sImagePushed.Source = null;
+                for(int i = 0; i < 5; i++) {
+                    sImages[i].Source = null; 
+                }
+
             }
 
         }
@@ -108,13 +109,13 @@ namespace Minesweeper {
         // change icon if start button is pressed down
         private void StartButtonDown(object sender, MouseButtonEventArgs e) {
 
-            startButton.Content = sImagePushed;         
+            startButton.Content = sImages[1];         
         }
 
         // start button click for new game
         private void StartButton(object sender, MouseButtonEventArgs e) {
  
-            startButton.Content = sImageDef; 
+            startButton.Content = sImages[0]; 
             
             // stop timer and reset all windows
             timer.Stop();
@@ -146,7 +147,7 @@ namespace Minesweeper {
 
                 timer.Stop(); 
                 mineTextBox.Text  = "0";
-                startButton.Content = sImageWin;
+                startButton.Content = sImages[3];
                 MessageBox.Show("Congratulations, You Won! Your time was: " + gTimer + " seconds");
             }
 
@@ -155,7 +156,7 @@ namespace Minesweeper {
                 timer.Stop();
                 int mineC = gameLogic.MineAmount - gameLogic.DismantledTiles; 
                 mineTextBox.Text = mineC.ToString();
-                startButton.Content = sImageLose;
+                startButton.Content = sImages[4];
 
                 MessageBox.Show("You lost!");
             }
@@ -171,7 +172,7 @@ namespace Minesweeper {
 
             else if (e.ChangedButton == MouseButton.Middle) {
                 
-                startButton.Content = sImageSurp;
+                startButton.Content = sImages[2];
                 MiddleClick(sender, e);
             }
 
@@ -182,7 +183,7 @@ namespace Minesweeper {
         private void MouseUpMiddle(object sender, MouseButtonEventArgs e) {
 
              if (e.ChangedButton == MouseButton.Middle) {
-                startButton.Content = sImageDef;
+                startButton.Content = sImages[0];
             }         
         }
 

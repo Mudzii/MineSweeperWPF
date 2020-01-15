@@ -27,15 +27,14 @@ namespace Minesweeper {
 
         // Variables ===============
         private List<Tile> gameTiles;
-        
-        // field size 
-        private int rows    = 16;
-        private int columns = 16;
 
+        // field size 
+        private int rows = 9;
+        private int columns = 9;
 
         // mine varialbes
         private int minesLeft  = 0; 
-        private int mineCount = 40;
+        private int mineCount = 10;
         private int dismantledTiles = 0; 
         private bool minesCreated  = false;
 
@@ -96,6 +95,7 @@ namespace Minesweeper {
 
         // Initialize functions =========
 
+        // uninitialize images used  
         public void UninitializeImages() {
 
             foreach (Tile t in gameTiles) {
@@ -109,9 +109,9 @@ namespace Minesweeper {
 
         }
 
+        // Initialize objects
         public void InitializeGame() {
 
-            
             minesLeft = mineCount;
            
             gameTiles = new List<Tile>();
@@ -119,6 +119,7 @@ namespace Minesweeper {
 
         }
 
+        // uninitialize objects 
         public void UninitializeGame() {
 
             UninitializeImages(); 
@@ -372,6 +373,7 @@ namespace Minesweeper {
             gameOver = true;
             EndGame(); 
         }
+
         // ==============================
 
         // MMC - reveal all tiles around clicked tile if surroundign flags = tiles surrounding bomb count  
@@ -379,82 +381,84 @@ namespace Minesweeper {
 
             Tile tile = gameTiles[ind];
 
+            // check if tile has surrounding bombs and is revealed
             if (tile.gTile.surroundingBombs > 0 && tile.gTile.revealed == true) {
 
-                int nDisarmed = 0;
+                // check how many surrounding tiles are disarmed
                 var nTiles = SurroundingTiles(tile.gTile.r, tile.gTile.c);
+                int nDisarmed = nTiles.Count(x => x.gTile.isDismantled == true);
 
-                nDisarmed = nTiles.Count(x => x.gTile.isDismantled == true);
-
+                // reveal neightbours if disarmed tiles = surrounding bombs
                 if(nDisarmed == tile.gTile.surroundingBombs) {
                     RevealNeighbours(tile); 
                 }
             }
         }
 
+        // LMC - reveal a tile
         public void RevealTile(int ind) {
 
             Tile tile = gameTiles[ind];
 
+            // only reveal if it isn't flagged
             if(tile.gTile.isDismantled == false) {
-
                 tile.gTile.revealed = true;
 
+                // if first click, created mines and check surrounding mine count for each tile
                 if (!minesCreated) {
                     CreateMines(gameTiles);
-                    GetSurroundingMines(gameTiles); 
-                    
+                    GetSurroundingMines(gameTiles);                
                 }
 
-              
-                if (tile.gButton.Content == tile.tImages[2]) {
-                    tile.gButton.Content = "";
-
-                 }
-
+                // if clicked tile is mine = game over
                 if (tile.gTile.isMine == true) {
-
                     tile.gButton.Content = tile.tImages[3];
                     tile.gButton.Background = Brushes.Red;
 
                     gameOver = true;
-                    UncoverMines(); 
-
+                    UncoverMines();
                 }
 
+                // if not mine
                 else {
 
+                    // if the tile has a number on it, reveal just that tile
                     if(tile.gTile.surroundingBombs != 0) {
                         tile.gButton.Content = tile.gTile.surroundingBombs.ToString();
                         tile.gButton.Background = Brushes.DarkGray; 
                     }
 
+                    // if the tile is empty, reveal surrounding tiles
                     else {
                         tile.gButton.Background = Brushes.DarkGray;
                         RevealNeighbours(tile);
                     }
 
-
+                    // update mine count
                     FieldMineCount(); 
                 }
 
             }
 
+            // check the game status
             GameStatus(); 
-
         }
 
+
+        // MMC - mark/unmark a tile
         public void MarkTile(int ind) {
 
             Tile tile = gameTiles[ind];
 
+            // if the tile is default, flag tile and 'dismantle'
             if (tile.gButton.Content == tile.tImages[0]) {
-                tile.gTile.isDismantled = true;
                 tile.gButton.Content = tile.tImages[1]; 
+                tile.gTile.isDismantled = true;
 
                 dismantledTiles++; 
             }
 
+            // if the tile is flagged, set to ? and remove dismantle 
             else if (tile.gButton.Content == tile.tImages[1]) {
                 tile.gButton.Content = tile.tImages[2];
                 tile.gTile.isDismantled = false;
@@ -462,33 +466,28 @@ namespace Minesweeper {
                 dismantledTiles--; 
             }
 
+            // if tile has ?, set to default tile
             else if (tile.gButton.Content == tile.tImages[2]) {
                 tile.gButton.Content = tile.tImages[0];
                 tile.gTile.isDismantled = false;
 
-                //if (tile.gTile.surroundingBombs == 1)
-                //    tile.gButton.Foreground = Brushes.Blue;
-
-
-                //else if (tile.gTile.surroundingBombs == 2)
-                //    tile.gButton.Foreground = Brushes.Green;
-
-                //else
-                //    tile.gButton.Foreground = Brushes.Red;
             }
 
-
+            // update mine count and status
             FieldMineCount();
             GameStatus(); 
         }
 
         // ==============================
+
+        // get the "mine count" for mines and marked tiles
         public int FieldMineCount() {
 
             int totalMineCnt = minesLeft - dismantledTiles;
             return totalMineCnt; 
         }
 
+        // check if win state is met
         private void GameStatus() {
 
             // if all tiles but the ones with mines have been revealed, game is won
@@ -500,7 +499,7 @@ namespace Minesweeper {
 
         // Gameplay functions ===========
     
-
+        // initialize a new game
         public void NewGame() {
 
 
@@ -520,8 +519,8 @@ namespace Minesweeper {
 
         }
 
+        // initialize endgame (make buttons unclickable) + reveal mines
         public void EndGame() {
-
 
             foreach(Tile t in gameTiles) {
 
