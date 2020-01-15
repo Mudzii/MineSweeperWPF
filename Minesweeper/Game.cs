@@ -62,7 +62,7 @@ namespace Minesweeper {
             }
         }
 
-        public bool MinesCreated {
+        private bool MinesCreated {
             get { return minesCreated; }
             set { minesCreated = value; }
         }
@@ -77,7 +77,7 @@ namespace Minesweeper {
             set { dismantledTiles = value; }
         } 
 
-        public int MinesLeft {
+        private int MinesLeft {
             get { return minesLeft; }
             set { minesLeft = value; }
         }
@@ -96,7 +96,7 @@ namespace Minesweeper {
         // Initialize functions =========
 
         // uninitialize images used  
-        public void UninitializeImages() {
+        private void UninitializeImages() {
 
             foreach (Tile t in gameTiles) {
 
@@ -443,7 +443,6 @@ namespace Minesweeper {
             // check the game status
             GameStatus(); 
         }
-
 
         // MMC - mark/unmark a tile
         public void MarkTile(int ind) {

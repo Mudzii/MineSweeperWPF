@@ -30,7 +30,7 @@ namespace Minesweeper {
         private DispatcherTimer timer;
         private int gTimer;
 
-        public List<Image> sImages;
+        private List<Image> sImages;
 
         // window init (Main)
         public MainWindow() {
@@ -241,7 +241,7 @@ namespace Minesweeper {
         }
 
         // remove events added to tile buttons 
-        public void UnsubEvent() {
+        private void UnsubEvent() {
 
             List<Tile> gTiles = gameLogic.GameTiles;
 
@@ -259,7 +259,7 @@ namespace Minesweeper {
         }
 
         // add event/binding and buttons to field
-        public void AddButtons() {
+        private void AddButtons() {
 
             List<Tile> gTiles = gameLogic.GameTiles;
             ICMineField.Items.Clear();
