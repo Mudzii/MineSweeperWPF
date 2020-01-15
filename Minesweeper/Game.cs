@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Text;
 using System.Windows.Media;
-using System.Windows.Controls;  // button
-using System.Windows.Threading; // dispatcherTimer
-using System.Windows.Media.Imaging;
+using System.Windows.Controls;      // button
+using System.Collections.Generic;
+using System.Windows.Media.Imaging; // Images
 
 namespace Minesweeper {
 
@@ -29,14 +28,14 @@ namespace Minesweeper {
         private List<Tile> gameTiles;
 
         // field size 
-        private int rows = 9;
+        private int rows    = 9;
         private int columns = 9;
 
         // mine varialbes
-        private int minesLeft  = 0; 
+        private int minesLeft = 0; 
         private int mineCount = 10;
         private int dismantledTiles = 0; 
-        private bool minesCreated  = false;
+        private bool minesCreated   = false;
 
         // game mode variables
         private bool gameOver = false;
@@ -92,7 +91,6 @@ namespace Minesweeper {
             set { gameWon = value; }
         }
 
-
         // Initialize functions =========
 
         // uninitialize images used  
@@ -101,10 +99,8 @@ namespace Minesweeper {
             foreach (Tile t in gameTiles) {
 
                 for (int i = 0; i < 4; i++) {
-
                     t.tImages[0].Source = null;
                 }
-
             }
 
         }
@@ -113,10 +109,8 @@ namespace Minesweeper {
         public void InitializeGame() {
 
             minesLeft = mineCount;
-           
             gameTiles = new List<Tile>();
             initializeTiles();
-
         }
 
         // uninitialize objects 
@@ -124,7 +118,6 @@ namespace Minesweeper {
 
             UninitializeImages(); 
             gameTiles = null;
-            
         }
 
         // Tile functions ===============
@@ -147,15 +140,15 @@ namespace Minesweeper {
             Tile bottomRight = gameTiles.Find(obj => obj.gTile.r == (row + 1) && obj.gTile.c == (col + 1));
 
             // check if objects are not null before adding (null means there is no tile)
-            if (left.gTile != null) { neighbouringTiles.Add(left); }
+            if (left.gTile  != null) { neighbouringTiles.Add(left); }
             if (right.gTile != null) { neighbouringTiles.Add(right); }
 
-            if (top.gTile != null) { neighbouringTiles.Add(top); }
-            if (topLeft.gTile != null) { neighbouringTiles.Add(topLeft); }
+            if (top.gTile      != null) { neighbouringTiles.Add(top); }
+            if (topLeft.gTile  != null) { neighbouringTiles.Add(topLeft); }
             if (topRight.gTile != null) { neighbouringTiles.Add(topRight); }
 
-            if (bottom.gTile != null) { neighbouringTiles.Add(bottom); }
-            if (bottomLeft.gTile != null) { neighbouringTiles.Add(bottomLeft); }
+            if (bottom.gTile      != null) { neighbouringTiles.Add(bottom); }
+            if (bottomLeft.gTile  != null) { neighbouringTiles.Add(bottomLeft); }
             if (bottomRight.gTile != null) { neighbouringTiles.Add(bottomRight); }
             
             return neighbouringTiles;
@@ -170,7 +163,7 @@ namespace Minesweeper {
                 if(tile.gTile.isMine == false) {
 
                     int mineTile = 0;
-                    var nTiles = SurroundingTiles(tile.gTile.r, tile.gTile.c); 
+                    var nTiles   = SurroundingTiles(tile.gTile.r, tile.gTile.c); 
 
                     // if any neighbour is mine, add to counter
                     foreach(Tile t in nTiles) {
@@ -241,9 +234,9 @@ namespace Minesweeper {
 
                         if(gt.gTile.surroundingBombs == 0) {
 
-                            gt.gButton.Content = ""; 
-                            gt.gButton.IsHitTestVisible = false;
+                            gt.gButton.Content    = ""; 
                             gt.gButton.Background = Brushes.DarkGray;
+                            gt.gButton.IsHitTestVisible = false;
 
                             RevealNeighbours(gt); 
 
@@ -251,7 +244,7 @@ namespace Minesweeper {
 
                         else {
                             gt.gButton.Background = Brushes.DarkGray;
-                            gt.gButton.Content = gt.gTile.surroundingBombs.ToString(); 
+                            gt.gButton.Content    = gt.gTile.surroundingBombs.ToString(); 
 
                         }
 
@@ -270,9 +263,8 @@ namespace Minesweeper {
             Tile temp    = new Tile();
             temp.gTile   = new GameTile();
             temp.gButton = new Button();
-            temp.tImages  = new List<Image>();
-            
-            temp.index = index;
+            temp.tImages = new List<Image>();
+            temp.index   = index;
 
             // Game tile
             temp.gTile.r   = row; 
@@ -289,19 +281,19 @@ namespace Minesweeper {
             temp.gButton.IsHitTestVisible = true;
  
             // tile images
-            Image defTileImage = new Image();
+            Image defTileImage  = new Image();
             defTileImage.Source = new BitmapImage(new Uri("/assets/defTile.png", UriKind.Relative));
             temp.tImages.Add(defTileImage);
 
-            Image flagTileImage = new Image();
+            Image flagTileImage  = new Image();
             flagTileImage.Source = new BitmapImage(new Uri("/assets/flagTile.png", UriKind.Relative));
             temp.tImages.Add(flagTileImage);
 
-            Image qTileImage = new Image();
+            Image qTileImage  = new Image();
             qTileImage.Source = new BitmapImage(new Uri("/assets/qmTile.png", UriKind.Relative));
             temp.tImages.Add(qTileImage);
 
-            Image mineImage = new Image();
+            Image mineImage  = new Image();
             mineImage.Source = new BitmapImage(new Uri("/assets/mineTile.png", UriKind.Relative));
             temp.tImages.Add(mineImage);
 
@@ -318,7 +310,6 @@ namespace Minesweeper {
             
             for(int i = 0; i < rows; i++) {
                 for(int j = 0; j < columns; j++) {
-
 
                     Tile t = CreateTile(tileIndex, i, j);
                     newTiles.Add(t);
@@ -353,7 +344,6 @@ namespace Minesweeper {
                 }
             }
 
-
             minesCreated = true; 
         }
 
@@ -380,12 +370,11 @@ namespace Minesweeper {
         public void RevealTilesAroundFlag(int ind) {
 
             Tile tile = gameTiles[ind];
-
             // check if tile has surrounding bombs and is revealed
             if (tile.gTile.surroundingBombs > 0 && tile.gTile.revealed == true) {
 
                 // check how many surrounding tiles are disarmed
-                var nTiles = SurroundingTiles(tile.gTile.r, tile.gTile.c);
+                var nTiles    = SurroundingTiles(tile.gTile.r, tile.gTile.c);
                 int nDisarmed = nTiles.Count(x => x.gTile.isDismantled == true);
 
                 // reveal neightbours if disarmed tiles = surrounding bombs
@@ -412,7 +401,7 @@ namespace Minesweeper {
 
                 // if clicked tile is mine = game over
                 if (tile.gTile.isMine == true) {
-                    tile.gButton.Content = tile.tImages[3];
+                    tile.gButton.Content    = tile.tImages[3];
                     tile.gButton.Background = Brushes.Red;
 
                     gameOver = true;
@@ -424,7 +413,7 @@ namespace Minesweeper {
 
                     // if the tile has a number on it, reveal just that tile
                     if(tile.gTile.surroundingBombs != 0) {
-                        tile.gButton.Content = tile.gTile.surroundingBombs.ToString();
+                        tile.gButton.Content    = tile.gTile.surroundingBombs.ToString();
                         tile.gButton.Background = Brushes.DarkGray; 
                     }
 
@@ -437,7 +426,6 @@ namespace Minesweeper {
                     // update mine count
                     FieldMineCount(); 
                 }
-
             }
 
             // check the game status
@@ -451,7 +439,7 @@ namespace Minesweeper {
 
             // if the tile is default, flag tile and 'dismantle'
             if (tile.gButton.Content == tile.tImages[0]) {
-                tile.gButton.Content = tile.tImages[1]; 
+                tile.gButton.Content    = tile.tImages[1]; 
                 tile.gTile.isDismantled = true;
 
                 dismantledTiles++; 
@@ -459,7 +447,7 @@ namespace Minesweeper {
 
             // if the tile is flagged, set to ? and remove dismantle 
             else if (tile.gButton.Content == tile.tImages[1]) {
-                tile.gButton.Content = tile.tImages[2];
+                tile.gButton.Content    = tile.tImages[2];
                 tile.gTile.isDismantled = false;
 
                 dismantledTiles--; 
@@ -467,7 +455,7 @@ namespace Minesweeper {
 
             // if tile has ?, set to default tile
             else if (tile.gButton.Content == tile.tImages[2]) {
-                tile.gButton.Content = tile.tImages[0];
+                tile.gButton.Content    = tile.tImages[0];
                 tile.gTile.isDismantled = false;
 
             }

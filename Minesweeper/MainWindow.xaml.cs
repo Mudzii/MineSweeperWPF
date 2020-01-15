@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Navigation;
+using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 
 
 using System.Diagnostics;       //debug
@@ -19,12 +19,8 @@ using System.Windows.Threading; //for dispatcherTimer
 using static Minesweeper.Game;
 
 namespace Minesweeper {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
 
     public partial class MainWindow : Window {
-
 
         private Game gameLogic;
         private DispatcherTimer timer;
@@ -39,10 +35,9 @@ namespace Minesweeper {
             this.Title = "Minesweeper";
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-  
             // initialize 
             initializeTimer();
-            gameLogic = new Game();
+            gameLogic        = new Game();
             this.DataContext = gameLogic;
 
             InitializeImages(true); 
@@ -66,23 +61,23 @@ namespace Minesweeper {
 
                 sImages = new List<Image>(); 
 
-                Image sImageDef = new Image();
+                Image sImageDef  = new Image();
                 sImageDef.Source = new BitmapImage(new Uri("/assets/smileyTile.png", UriKind.Relative));
                 sImages.Add(sImageDef);
 
-                Image sImagePushed = new Image();
+                Image sImagePushed  = new Image();
                 sImagePushed.Source = new BitmapImage(new Uri("/assets/clickedSmiley.png", UriKind.Relative));
                 sImages.Add(sImagePushed);
 
-                Image sImageSurp = new Image();
+                Image sImageSurp  = new Image();
                 sImageSurp.Source = new BitmapImage(new Uri("/assets/surpTile.png", UriKind.Relative));
                 sImages.Add(sImageSurp);
 
-                Image sImageWin = new Image();
+                Image sImageWin  = new Image();
                 sImageWin.Source = new BitmapImage(new Uri("/assets/winTile.png", UriKind.Relative));
                 sImages.Add(sImageWin);
 
-                Image sImageLose = new Image();
+                Image sImageLose  = new Image();
                 sImageLose.Source = new BitmapImage(new Uri("/assets/gameOverTile.png", UriKind.Relative));
                 sImages.Add(sImageLose);
 
@@ -101,9 +96,9 @@ namespace Minesweeper {
 
         // initialize the timer used for the game
         private void initializeTimer() {
-            timer = new DispatcherTimer();
+            timer          = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += GameTick;
+            timer.Tick    += GameTick;
         }
 
         // change icon if start button is pressed down
@@ -121,7 +116,7 @@ namespace Minesweeper {
             timer.Stop();
             gTimer = 0; 
             timerTextBox.Text = "0";
-            mineTextBox.Text = gameLogic.MineAmount.ToString();
+            mineTextBox.Text  = gameLogic.MineAmount.ToString();
             UnsubEvent();
 
             // create new game and add buttons
@@ -132,7 +127,7 @@ namespace Minesweeper {
 
         // updates the "mine count" AKA mines - flagged mines
         private void UpdateMineCount() {
-            int nrMines = gameLogic.FieldMineCount();
+            int nrMines      = gameLogic.FieldMineCount();
             mineTextBox.Text = nrMines.ToString();
         }
 
@@ -146,7 +141,7 @@ namespace Minesweeper {
             if (gameWon) {
 
                 timer.Stop(); 
-                mineTextBox.Text  = "0";
+                mineTextBox.Text    = "0";
                 startButton.Content = sImages[3];
                 MessageBox.Show("Congratulations, You Won! Your time was: " + gTimer + " seconds");
             }
@@ -155,7 +150,7 @@ namespace Minesweeper {
 
                 timer.Stop();
                 int mineC = gameLogic.MineAmount - gameLogic.DismantledTiles; 
-                mineTextBox.Text = mineC.ToString();
+                mineTextBox.Text    = mineC.ToString();
                 startButton.Content = sImages[4];
 
                 MessageBox.Show("You lost!");
@@ -227,11 +222,11 @@ namespace Minesweeper {
 
             UnsubEvent();
             timer.Tick -= GameTick;
-            timer = null;
+            timer       = null;
 
             InitializeImages(false);
 
-            startButton.PreviewMouseDown -= StartButtonDown;
+            startButton.PreviewMouseDown         -= StartButtonDown;
             startButton.PreviewMouseLeftButtonUp -= StartButton;
 
             UnsubEvent(); 
@@ -247,7 +242,7 @@ namespace Minesweeper {
 
             foreach(Tile t in gTiles) {
 
-                t.gButton.Click -= ClickedTile;
+                t.gButton.Click     -= ClickedTile;
                 t.gButton.MouseDown -= MouseButtonClick;
                 t.gButton.PreviewMouseUp -= MouseUpMiddle;
 
@@ -267,7 +262,7 @@ namespace Minesweeper {
             foreach (Tile t in gTiles) {
 
                 // add click events for buttons 
-                t.gButton.Click += ClickedTile;
+                t.gButton.Click     += ClickedTile;
                 t.gButton.MouseDown += MouseButtonClick;
                 t.gButton.PreviewMouseUp += MouseUpMiddle;
                 
@@ -275,7 +270,7 @@ namespace Minesweeper {
 
                 // bind tile index to button
                 Binding bindingTag = new Binding();
-                bindingTag.Source = t.index;
+                bindingTag.Source  = t.index;
                 t.gButton.SetBinding(Button.TagProperty, bindingTag);
             }
 
