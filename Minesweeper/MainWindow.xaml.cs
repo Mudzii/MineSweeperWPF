@@ -13,10 +13,10 @@ using System.Windows.Navigation;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 
-
 using System.Diagnostics;       //debug
 using System.Windows.Threading; //for dispatcherTimer
 using static Minesweeper.Game;
+
 
 namespace Minesweeper {
 
@@ -29,6 +29,7 @@ namespace Minesweeper {
         private DispatcherTimer timer;
         private int gTimer;
 
+        private MediaPlayer mediaPlayer; 
 
         // window init (Main) ======
         public MainWindow() {
@@ -47,6 +48,8 @@ namespace Minesweeper {
 
             AddButtons();
             startButton.Content = sImages[0];
+
+            InitializeMusic(); 
         }
 
         // Timer functions =========
@@ -67,6 +70,18 @@ namespace Minesweeper {
 
         // =========================
 
+
+        private void InitializeMusic() {
+
+            mediaPlayer = new MediaPlayer();
+
+            var uri = new Uri(System.Environment.CurrentDirectory + @"/assets/Asking_Questions_in_an_Eight_Bit_Basement.wav", UriKind.Relative);
+            mediaPlayer.Open(uri);
+            mediaPlayer.Volume = 0.005;
+            mediaPlayer.MediaEnded += MediaEnded;
+            mediaPlayer.Play(); 
+        }
+
         // initialize images used 
         private void InitializeImages(bool init) {
 
@@ -75,23 +90,23 @@ namespace Minesweeper {
                 sImages = new List<Image>(); 
 
                 Image sImageDef  = new Image();
-                sImageDef.Source = new BitmapImage(new Uri("/assets/smileyTile.png", UriKind.Relative));
+                sImageDef.Source = new BitmapImage(new Uri("/assets/smileyImages/smileyTile.png", UriKind.Relative));
                 sImages.Add(sImageDef);
 
                 Image sImagePushed  = new Image();
-                sImagePushed.Source = new BitmapImage(new Uri("/assets/clickedSmiley.png", UriKind.Relative));
+                sImagePushed.Source = new BitmapImage(new Uri("/assets/smileyImages/clickedSmiley.png", UriKind.Relative));
                 sImages.Add(sImagePushed);
 
                 Image sImageSurp  = new Image();
-                sImageSurp.Source = new BitmapImage(new Uri("/assets/surpTile.png", UriKind.Relative));
+                sImageSurp.Source = new BitmapImage(new Uri("/assets/smileyImages/surpTile.png", UriKind.Relative));
                 sImages.Add(sImageSurp);
 
                 Image sImageWin  = new Image();
-                sImageWin.Source = new BitmapImage(new Uri("/assets/winTile.png", UriKind.Relative));
+                sImageWin.Source = new BitmapImage(new Uri("/assets/smileyImages/winTile.png", UriKind.Relative));
                 sImages.Add(sImageWin);
 
                 Image sImageLose  = new Image();
-                sImageLose.Source = new BitmapImage(new Uri("/assets/gameOverTile.png", UriKind.Relative));
+                sImageLose.Source = new BitmapImage(new Uri("/assets/smileyImages/gameOverTile.png", UriKind.Relative));
                 sImages.Add(sImageLose);
 
 
@@ -136,7 +151,16 @@ namespace Minesweeper {
 
             // create new game and add buttons
             gameLogic.NewGame();
-            AddButtons(); 
+            AddButtons();
+
+            if(muteMusic.Content.ToString() == "Mute Music") {
+                mediaPlayer.Stop();
+                mediaPlayer.Position = TimeSpan.Zero;
+                mediaPlayer.Play(); 
+                muteMusic.Content = "Mute Music"; 
+            }
+
+            
 
         }
 
@@ -174,7 +198,7 @@ namespace Minesweeper {
             GameStatusUpdate(); 
         }
 
-    // check if game is won/ lost. Update mine count
+        // check if game is won/ lost. Update mine count
         private void GameStatusUpdate() {
 
             bool gameWon  = gameLogic.GameWon; 
@@ -226,6 +250,25 @@ namespace Minesweeper {
 
         }
 
+        private void MuteClick(object sender, RoutedEventArgs e) {
+
+            Button b = (sender as Button); 
+
+            if(b.Content.ToString() == "Mute Music" && mediaPlayer.Position != TimeSpan.Zero) {
+                mediaPlayer.Stop();
+                b.Content = "Play Music"; 
+            }
+
+            else {
+                mediaPlayer.Play();
+                b.Content = "Mute Music";
+            }
+
+        }
+
+        
+
+
         // =========================
 
         // event called just as window closes
@@ -240,10 +283,19 @@ namespace Minesweeper {
             startButton.PreviewMouseDown         -= StartButtonDown;
             startButton.PreviewMouseLeftButtonUp -= StartButton;
 
+            mediaPlayer.MediaEnded -= MediaEnded; 
+
             UnsubEvent(); 
             gameLogic.UninitializeGame();
             gameLogic = null;
             
+        }
+
+        private void MediaEnded(object sender, EventArgs e) {
+
+            mediaPlayer.Position = TimeSpan.Zero;
+            mediaPlayer.Play();
+
         }
 
         // remove events added to tile buttons 

@@ -282,19 +282,19 @@ namespace Minesweeper {
  
             // tile images
             Image defTileImage  = new Image();
-            defTileImage.Source = new BitmapImage(new Uri("/assets/defTile.png", UriKind.Relative));
+            defTileImage.Source = new BitmapImage(new Uri("/assets/tileImages/defTile.png", UriKind.Relative));
             temp.tImages.Add(defTileImage);
 
             Image flagTileImage  = new Image();
-            flagTileImage.Source = new BitmapImage(new Uri("/assets/flagTile.png", UriKind.Relative));
+            flagTileImage.Source = new BitmapImage(new Uri("/assets/tileImages/flagTile.png", UriKind.Relative));
             temp.tImages.Add(flagTileImage);
 
             Image qTileImage  = new Image();
-            qTileImage.Source = new BitmapImage(new Uri("/assets/qmTile.png", UriKind.Relative));
+            qTileImage.Source = new BitmapImage(new Uri("/assets/tileImages/qmTile.png", UriKind.Relative));
             temp.tImages.Add(qTileImage);
 
             Image mineImage  = new Image();
-            mineImage.Source = new BitmapImage(new Uri("/assets/mineTile.png", UriKind.Relative));
+            mineImage.Source = new BitmapImage(new Uri("/assets/tileImages/mineTile.png", UriKind.Relative));
             temp.tImages.Add(mineImage);
 
             // set button image to default tile

@@ -7,12 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\Asking_Questions_in_an_Eight_Bit_Basement.wav" />
     <None Remove="assets\clickedSmiley.png" />
     <None Remove="assets\defTile.png" />
-    <None Remove="assets\flag.png" />
     <None Remove="assets\flagTile.png" />
     <None Remove="assets\gameOverTile.png" />
-    <None Remove="assets\mine.png" />
     <None Remove="assets\mineTile.png" />
     <None Remove="assets\qmTile.png" />
     <None Remove="assets\smileyTile.png" />
@@ -25,17 +24,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="assets\clickedSmiley.png" />
-    <Resource Include="assets\defTile.png" />
-    <Resource Include="assets\flag.png" />
-    <Resource Include="assets\flagTile.png" />
-    <Resource Include="assets\gameOverTile.png" />
+    <Content Include="assets\Asking_Questions_in_an_Eight_Bit_Basement.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="assets\smileyImages\clickedSmiley.png" />
+    <Resource Include="assets\tileImages\defTile.png" />
+    <Resource Include="assets\tileImages\flagTile.png" />
+    <Resource Include="assets\smileyImages\gameOverTile.png" />
     <Resource Include="assets\mine.png" />
-    <Resource Include="assets\mineTile.png" />
-    <Resource Include="assets\qmTile.png" />
-    <Resource Include="assets\smileyTile.png" />
-    <Resource Include="assets\surpTile.png" />
-    <Resource Include="assets\winTile.png" />
+    <Resource Include="assets\tileImages\mineTile.png" />
+    <Resource Include="assets\tileImages\qmTile.png" />
+    <Resource Include="assets\smileyImages\smileyTile.png" />
+    <Resource Include="assets\smileyImages\surpTile.png" />
+    <Resource Include="assets\smileyImages\winTile.png" />
   </ItemGroup>
 
 </Project>
