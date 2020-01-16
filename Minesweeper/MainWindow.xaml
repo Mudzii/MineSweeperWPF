@@ -32,7 +32,7 @@
 
                  <!--Grid buttons--> 
                 <Button Name="muteMusic" Margin="0 0 5 0" Background="#bdbdbd" Grid.Column="0" Content="Mute Music" Click="MuteClick"/>
-                <Button Background="#bdbdbd" Grid.Column="1" Content="Controls" />
+                <Button Background="#bdbdbd" Grid.Column="1" Content="Controls" Click="ControlsClick" />
                 <Button Margin="5 0 0 0" Grid.Column="2" Background="#bdbdbd" Content="Credits">
                     <Button.ToolTip>
                         <TextBlock>Music: "Asking Questions in an Eight Bit Basement" by Teknoaxe</TextBlock>
@@ -64,7 +64,7 @@
                            Grid.Column="0" 
                            Text="0" 
                            Height="50"
-                           FontSize="32"
+                           FontSize="36"
                            TextAlignment="Right"
                            FontWeight="Bold" />
 
@@ -87,7 +87,7 @@
                            Grid.Column="4" 
                            Height="50"
                            Text="0"           
-                           FontSize="32"
+                           FontSize="36"
                            TextAlignment="Right"
                            FontWeight="Bold" />
             </Grid>

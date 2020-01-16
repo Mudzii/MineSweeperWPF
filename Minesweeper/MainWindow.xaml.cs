@@ -29,7 +29,8 @@ namespace Minesweeper {
         private DispatcherTimer timer;
         private int gTimer;
 
-        private MediaPlayer mediaPlayer; 
+        private MediaPlayer mediaPlayer;
+        string cntrls = "User controls: \n-Left-click an empty square to reveal it \n-Right-Click a square to flag it or mark it with ? \n-Middle-Click a numbered square to reveal any neighbouring squares";
 
         // window init (Main) ======
         public MainWindow() {
@@ -70,7 +71,7 @@ namespace Minesweeper {
 
         // =========================
 
-
+        // initializes music 
         private void InitializeMusic() {
 
             mediaPlayer = new MediaPlayer();
@@ -250,6 +251,7 @@ namespace Minesweeper {
 
         }
 
+        // mute/unmutes music
         private void MuteClick(object sender, RoutedEventArgs e) {
 
             Button b = (sender as Button); 
@@ -266,7 +268,11 @@ namespace Minesweeper {
 
         }
 
-        
+        // popup with user controls
+        private void ControlsClick(object sender, RoutedEventArgs e) {
+
+            MessageBox.Show(cntrls, "User Controls");      
+        }
 
 
         // =========================
@@ -287,10 +293,12 @@ namespace Minesweeper {
 
             UnsubEvent(); 
             gameLogic.UninitializeGame();
-            gameLogic = null;
+            gameLogic   = null;
+            mediaPlayer = null;
             
         }
 
+        // loops music after song has ended 
         private void MediaEnded(object sender, EventArgs e) {
 
             mediaPlayer.Position = TimeSpan.Zero;
