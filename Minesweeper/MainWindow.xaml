@@ -1,53 +1,50 @@
 ﻿        <Window x:Class="Minesweeper.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-          
-        
-        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase" 
-     
-            
+                                  
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Minesweeper"
         mc:Ignorable="d"
-         
-            
+                 
         Title="Minesweeper" 
+            Icon="/assets/mine.png"
             Height="650" 
             Width="550" 
             ResizeMode="NoResize" 
             Topmost="False" 
             WindowState="Normal"
-            SizeToContent="WidthAndHeight">
+            SizeToContent="WidthAndHeight"
+            Closing="WindowClosing"    >
 
-  
-
-
+    <!--xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"-->
     <Border Padding="10" Background="#bdbdbd">
-
-        
-        
         <StackPanel Background="#bdbdbd">
             <!-- Options menu -->
-             <Grid x:Name="optionsMenu">
+            <Grid x:Name="optionsMenu">
                  
-                <!-- Grid definition -->
+                 <!--Grid definition--> 
                 <Grid.ColumnDefinitions>
                      <ColumnDefinition Width="*" />
                      <ColumnDefinition Width="*" />
                      <ColumnDefinition Width="*" />
                  </Grid.ColumnDefinitions>
 
-                <!-- Grid buttons -->
-                <Button Margin="0 0 5 0" Background="#bdbdbd" Grid.Column="0" Content="Game" />
-                <Button Grid.Column="1" Background="#bdbdbd" Content="Options" />
-                <Button Margin="5 0 0 0" Background="#bdbdbd" Grid.Column="2" Content="Help" />
-            
+                 <!--Grid buttons--> 
+                <Button Name="muteMusic" Margin="0 0 5 0" Background="#bdbdbd" Grid.Column="0" Content="Mute Music" Click="MuteClick"/>
+                <Button Background="#bdbdbd" Grid.Column="1" Content="Controls" Click="ControlsClick" />
+                <Button Margin="5 0 0 0" Grid.Column="2" Background="#bdbdbd" Content="Credits">
+                    <Button.ToolTip>
+                        <TextBlock>Music: "Asking Questions in an Eight Bit Basement" by Teknoaxe</TextBlock>
+                    </Button.ToolTip>
+                </Button>
+                
+
             </Grid>
             <!-- End options menu -->
            
             <!-- Game info (timer etc) -->
-            <Grid x:Name="infoMenu" Height="35">
+            <Grid x:Name="infoMenu" Height="55">
 
                 <!-- Grid definition -->
                 <Grid.ColumnDefinitions>
@@ -59,7 +56,6 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Grid buttons -->
-
                 <TextBlock x:Name="mineTextBox" 
                            Background="#0c0c0c" 
                            Foreground="#f20000"
@@ -67,34 +63,33 @@
                            Padding="5 0 5 0"
                            Grid.Column="0" 
                            Text="0" 
-                           FontSize="22"
+                           Height="50"
+                           FontSize="36"
                            TextAlignment="Right"
-                           
                            FontWeight="Bold" />
-
 
                 <Button x:Name="startButton"
                         Margin="0 5 0 0" 
                         Background="#bdbdbd" 
                         Grid.Column="2" 
-                        Content="" 
-                        Click="StartButton"
+                        Height="50"
+                        Width="50"
+                        Content=""       
+                        PreviewMouseDown="StartButtonDown"
+                        PreviewMouseLeftButtonUp="StartButton"
                         />
-                
+
                 <TextBlock x:Name="timerTextBox" 
                            Background="#0c0c0c" 
                            Foreground="#f20000"
                            Margin="0 5 0 0" 
                            Padding="5 0 5 0"
                            Grid.Column="4" 
-                           
+                           Height="50"
                            Text="0"           
-                           FontSize="22"
+                           FontSize="36"
                            TextAlignment="Right"
-                           
                            FontWeight="Bold" />
-
-
             </Grid>
             <!-- End game info -->
 
@@ -102,51 +97,15 @@
             
             <!-- Mine area -->
             <Grid Grid.Row="1" x:Name="gameArea" Background="#7b7b7b">
-
-               
+    
                 <!-- templates. ItemsControl must be empty before populating (templates inside only) -->
                 <ItemsControl x:Name="ICMineField"  
-                              ItemsSource="{Binding AddButtons}"
+                              
                               MinWidth="300" 
                               MinHeight="300"
                               Margin="5" >
-
-                    <!-- ItemsSource="{Binding Tiles}" icon template -->
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            
-                            <Grid Margin="1"
-                                  Background="#656565"
-                                  MinWidth="15"
-                                  MinHeight="15"
-                                  >
-                                  
-                                <Grid Grid.Row="0">
-                                    
-                                    <!-- Button with text --><!--
-                                    <Button Foreground="#f20000"
-                                            Background="{Binding Clr, UpdateSourceTrigger=PropertyChanged}"
-                                            FontWeight="Bold" 
-                                            FontSize="16"
-                                            Content="{Binding Txt}" 
-                                            Tag="{Binding Index}"
-                                            Click="ClickedTile"   
-                                            
-                                            
-                                            />
-                                            --><!-- 
-                                            Content="{Binding Index}" 
-                                    Style="{StaticResource tileButton}" --> 
-                                    
-                                    
-                                    
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                    <!-- Templet for layout -->
-                    <!--  diag:PresentationTraceSources.TraceLevel=High-->
+                    
+                    <!-- Template for layout -->               
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid x:Name="mineFieldGrid" 
@@ -156,19 +115,9 @@
 
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel> 
-
-
-
-
-
                 </ItemsControl>
 
-                <!--
-                <UniformGrid Name="mineField" >
-                    <Button Content="" Background="#bdbdbd" Click="Button_Click" FontSize="20" FontWeight="Bold"/>
-                    <Button Content="" Background="#bdbdbd" Click="Button_Click" FontSize="20" FontWeight="Bold"/>
-                </UniformGrid> -->
-
+                
             </Grid>
             <!-- End Mine area -->
 

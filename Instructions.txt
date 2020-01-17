@@ -1,0 +1,30 @@
+======= LAUNCH THE GAME =======
+
+Open the MineSweeperWPF folder and run the Minesweeper.exe
+
+==== GAMEPLAY INSTRUCTIONS ====
+
+• Left-click click: reveals the square clicked. If the square is empty, neighbors are revealed. (Neighbors are the tiles just above, below, left, right and diagonal to the tile clicked)
+• Right-click: Marks a square with a flag or a ?. Flagged squares cannot be revealed while tiles with? Can.
+• Middle mouse-button click: If a numbered tile has the same number of flags around it, the tile can be middle clicked to reveal its neighbors
+
+• Clicking the smiley will start a new game
+• To win the game, all unmined tiles need to be revealed. However, they do not need to be flagged
+• The upper left corner displays the number of bombs left to find. The number will be changed as tiles are flagged
+• The upper right corner displays the time counter starting from 0. It will not start counting until the first tile is clicked.
+
+
+====== CHANGE DIFFICULTY ======
+
+To change the difficulty of the game, the source code must be opened. At the top of the Game.cs file are 3 integers that change the difficulty:
+
+• int rows: changes the number of rows for the minefield
+• int columns: changes the number of columns for the minefield
+• int minesLeft: changes the number of mines placed on the field. If the input is larger than the tiles in the field, it will default to (rows * columns) - 1
+
+Recommendations for game difficulties are: (row x column)
+• EASY:     9x9 | 10
+• MEDIUM: 16x16 | 40
+• EXPERT: 16x30 | 99
+
+After the values are changed, rebuild the code (in release mode) and restart the .exe
