@@ -10,12 +10,6 @@ namespace Minesweeper {
 
     public class Game {
 
-        /* =================
-         EASY: 9x9 | 10
-         MEDIUM: 16x16 | 40
-         EXPERT: 16x30 | 99
-         =================  */
-
         public struct Tile {
             public int index;
             public GameTile gTile;
@@ -33,6 +27,7 @@ namespace Minesweeper {
 
         // mine varialbes
         private int minesLeft = 0; 
+
         private int mineCount = 10;
         private int dismantledTiles = 0; 
         private bool minesCreated   = false;
